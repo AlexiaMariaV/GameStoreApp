@@ -34,5 +34,14 @@ public abstract class User implements HasId {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", userId=" + userId +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
 

@@ -7,6 +7,15 @@ public class Admin extends User {
     }
 
     @Override
+    public String toString() {
+        return "Admin{" +
+                "username='" + username + '\'' +
+                ", userId=" + userId +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
+    @Override
     public Integer getId() {
         return userId;
     }

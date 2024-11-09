@@ -3,7 +3,7 @@ package Model;
 import java.util.List;
 
 public class Developer extends User{
-    List<Game> publishedGames;
+    private List<Game> publishedGames;
 
     public Developer(String username, Integer userId, String password, List<Game> publishedGames) {
         super(username, userId, password);
