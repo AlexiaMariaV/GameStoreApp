@@ -1,6 +1,8 @@
 package Model;
 
 
+import java.util.List;
+
 public class Game implements HasId {
 
     private Integer gameId;
@@ -9,15 +11,16 @@ public class Game implements HasId {
     private String gameGenre;
     //genre to be added
     private float price;
-    //list of reviews to be added
+    List<Review> reviews;
 
 
-    public Game(Integer gameId, String gameName, String gameDescription, String gameGenre, float price) {
+    public Game(Integer gameId, String gameName, String gameDescription, String gameGenre, float price, List<Review> reviews) {
         this.gameId = gameId;
         this.gameName = gameName;
         this.gameDescription = gameDescription;
         this.gameGenre = gameGenre;
         this.price = price;
+        this.reviews = reviews;
     }
 
     public Integer getGameId() {
