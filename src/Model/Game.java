@@ -8,13 +8,12 @@ public class Game implements HasId {
     private Integer gameId;
     private String gameName;
     private String gameDescription;
-    private String gameGenre;
-    //genre to be added
+    private GameGenre gameGenre;
     private float price;
     List<Review> reviews;
 
 
-    public Game(Integer gameId, String gameName, String gameDescription, String gameGenre, float price, List<Review> reviews) {
+    public Game(Integer gameId, String gameName, String gameDescription, GameGenre gameGenre, float price, List<Review> reviews) {
         this.gameId = gameId;
         this.gameName = gameName;
         this.gameDescription = gameDescription;
@@ -47,11 +46,11 @@ public class Game implements HasId {
         this.gameDescription = gameDescription;
     }
 
-    public String getGameGenre() {
+    public GameGenre getGameGenre() {
         return gameGenre;
     }
 
-    public void setGameGenre(String gameGenre) {
+    public void setGameGenre(GameGenre gameGenre) {
         this.gameGenre = gameGenre;
     }
 
@@ -62,6 +61,10 @@ public class Game implements HasId {
     public void setPrice(float price) {
         this.price = price;
     }
+
+    public List<Review> getReviews() {return reviews;}
+
+    public void setReviews(List<Review> reviews) {this.reviews = reviews;}
 
     @Override
     public String toString() {
