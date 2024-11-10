@@ -10,6 +10,10 @@ public class Developer extends User{
         this.publishedGames = publishedGames;
     }
 
+    public void addPublishedGame(Game game) {
+        this.publishedGames.add(game);
+    }
+
     public List<Game> getPublishedGames() {
         return publishedGames;
     }
