@@ -26,4 +26,9 @@ public class AccountController {
         return accountService.getLoggedInUser();
     }
 
+    public boolean deleteAccount() {
+        return accountService.deleteAccount();
+    }
+
+
 }
