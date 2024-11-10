@@ -5,11 +5,9 @@ import Model.Game;
 
 public class AdminService {
     private final IRepository<Game> gameRepository;
-    private final AccountService accountService;
 
-    public AdminService(IRepository<Game> gameRepository, AccountService accountService) {
+    public AdminService(IRepository<Game> gameRepository) {
         this.gameRepository = gameRepository;
-        this.accountService = accountService;
     }
 
     // Modificăm această metodă pentru a accepta gameId ca parametru

@@ -3,6 +3,7 @@ package Service;
 import Model.*;
 import Repository.IRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class AccountService {
                 newUser = new Admin(userId, username, email, password, role);
                 break;
             case "Developer":
-                newUser = new Developer(userId, username, email, password, role, List.of());
+                newUser = new Developer(userId, username, email, password, role, new ArrayList<Game>());
                 break;
             default:
                 newUser = new Customer(userId, username, email, password, role, 0.0f, List.of(), List.of(), new ShoppingCart(null, List.of()));

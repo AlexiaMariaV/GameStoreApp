@@ -3,10 +3,13 @@ package ConsoleApp;
 import Controller.AccountController;
 import Controller.GameController;
 import Controller.AdminController;
+import Controller.DeveloperController;
+import Model.Developer;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Service.GameService;
 import Service.AdminService;
+import Service.DeveloperService;
 import Model.User;
 import Model.Game;
 import Model.GameGenre;
@@ -20,15 +23,18 @@ public class ConsoleApp {
     private final GameController gameController;
     private final AdminController adminController;
     private final Scanner scanner;
+    private final DeveloperController developerController;
 
     public ConsoleApp() {
         InMemoryRepository<Game> repository = new InMemoryRepository<>();
         AccountService accountService = new AccountService(new InMemoryRepository<>());
         GameService gameService = new GameService(repository);
-        AdminService adminService = new AdminService(repository, accountService);
+        AdminService adminService = new AdminService(repository);
+        DeveloperService developerService = new DeveloperService(repository, null);
         this.accountController = new AccountController(accountService);
         this.gameController = new GameController(gameService);
         this.adminController = new AdminController(adminService);
+        this.developerController = new DeveloperController(developerService);
         this.scanner = new Scanner(System.in);
         initializeGames();
     }
@@ -53,11 +59,12 @@ public class ConsoleApp {
             System.out.println("2. Log In");
             System.out.println("3. Log Out");
             System.out.println("4. Delete Account");
-            System.out.println("5. Add Game");
+            System.out.println("5. Add Game (Developer Only)");
             System.out.println("6. View Game");
             System.out.println("7. List All Games");
             System.out.println("8. Delete Game (Admin Only)");
-            System.out.println("9. Exit");
+            System.out.println("9. Modify Game (Developer Only)");
+            System.out.println("10. Exit");
             System.out.print("Select option: ");
             int option = scanner.nextInt();
             scanner.nextLine();
@@ -67,11 +74,12 @@ public class ConsoleApp {
                 case 2 -> handleLogIn();
                 case 3 -> handleLogOut();
                 case 4 -> handleDeleteAccount();
-                case 5 -> handleAddGame();
+                case 5 -> handlePublishGame();
                 case 6 -> handleViewGame();
                 case 7 -> handleListAllGames();
-                case 8 -> handleDeleteGame(); // Admin game deletion
-                case 9 -> {
+                case 8 -> handleDeleteGame();
+                case 9 -> handleModifyGame();
+                case 10 -> {
                     System.out.println("Exiting...");
                     return;
                 }
@@ -79,7 +87,6 @@ public class ConsoleApp {
             }
         }
     }
-
 
     private void handleSignUp() {
         System.out.print("Username: ");
@@ -128,26 +135,35 @@ public class ConsoleApp {
         }
     }
 
-    private void handleAddGame() {
-        System.out.print("Game Name: ");
+    private void handlePublishGame(){
+        User loggedUser = accountController.getLoggedInUser();
+        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
+            System.out.println("Nu aveți permisiunea de a adauga jocuri.");
+            return;
+        }
+
+        System.out.print("Nume joc: ");
         String gameName = scanner.nextLine();
-        System.out.print("Game Description: ");
+        System.out.print("Descriere joc: ");
         String gameDescription = scanner.nextLine();
-        System.out.print("Game Genre (e.g., ACTION, ADVENTURE): ");
+        System.out.print("Gen joc (ex: ACTION, ADVENTURE): ");
         String genreInput = scanner.nextLine();
         GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
-        System.out.print("Price: ");
+        System.out.print("Preț: ");
         float price = scanner.nextFloat();
         scanner.nextLine();
 
-        Game game = new Game(null, gameName, gameDescription, gameGenre, price, new ArrayList<>());
-        gameController.addGame(game);
+        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
+
+        Developer developer = (Developer) loggedUser;
+        developerController.setDeveloper(developer);
+        developerController.publishGame(game);
     }
 
     private void handleViewGame() {
         System.out.print("Enter Game ID: ");
         Integer gameId = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         Game game = gameController.getGameById(gameId);
         if (game != null) {
@@ -170,7 +186,6 @@ public class ConsoleApp {
     }
 
     private void handleDeleteGame() {
-        // Verificăm dacă utilizatorul logat este un admin
         if (accountController.getLoggedInUser() == null || !accountController.getLoggedInUser().getRole().equals("Admin")) {
             System.out.println("Nu aveți permisiunea de a șterge jocuri.");
             return;
@@ -178,12 +193,35 @@ public class ConsoleApp {
 
         System.out.print("Enter the game ID you want to delete: ");
         int gameId = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
-        // Apelăm metoda de ștergere a jocului din AdminController
         adminController.deleteGame(gameId);
     }
+    private void handleModifyGame() {
+        User loggedUser = accountController.getLoggedInUser();
+        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
+            System.out.println("You are not logged in.");
+            return;
+        }
+        System.out.print("Game ID: ");
+        int gameID = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("New Name: ");
+        String newName = scanner.nextLine();
+        System.out.print("New Game description: ");
+        String newDescription = scanner.nextLine();
+        System.out.println("New Game genre: ");
+        String newGenre = scanner.nextLine();
+        System.out.print("New Price: ");
+        float newPrice = scanner.nextFloat();
+        scanner.nextLine();
 
+        Developer developer = (Developer) loggedUser;
+        developerController.setDeveloper(developer);
+
+
+        developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
+    }
 
     public static void main(String[] args) {
         new ConsoleApp().start();
