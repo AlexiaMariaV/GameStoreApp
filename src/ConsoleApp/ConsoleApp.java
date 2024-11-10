@@ -1,5 +1,6 @@
 package ConsoleApp;
 
+import Controller.AccountController;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Model.User;
@@ -7,11 +8,12 @@ import java.util.Scanner;
 
 
 public class ConsoleApp {
-    private final AccountService accountService;
+    private final AccountController accountController;
     private final Scanner scanner;
 
     public ConsoleApp() {
-        this.accountService = new AccountService(new InMemoryRepository<>());
+        AccountService accountService = new AccountService(new InMemoryRepository<>());
+        this.accountController = new AccountController(accountService);
         this.scanner = new Scanner(System.in);
     }
 
@@ -46,7 +48,11 @@ public class ConsoleApp {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        accountService.signUp(username, email, password);
+        if (accountController.signUp(username, email, password)) {
+            System.out.println("Sign-up successful!");
+        } else {
+            System.out.println("Sign-up failed! Email may already be in use.");
+        }
     }
 
     private void handleLogIn() {
@@ -55,11 +61,15 @@ public class ConsoleApp {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        accountService.logIn(email, password);
+        if (accountController.logIn(email, password)) {
+            System.out.println("Login successful!");
+        } else {
+            System.out.println("Invalid email or password.");
+        }
     }
 
     private void handleLogOut() {
-        accountService.logOut();
+        accountController.logOut();
     }
 
     public static void main(String[] args) {

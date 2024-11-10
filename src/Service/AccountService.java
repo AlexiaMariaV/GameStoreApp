@@ -76,9 +76,9 @@ public class AccountService {
     }
 
     private String determineRoleByEmail(String email) {
-        if (email.endsWith("adm@gmail.com")) {
+        if (email.endsWith("@adm.com")) {
             return "Admin";
-        } else if (email.endsWith("dev@gmail.com")) {
+        } else if (email.endsWith("@dev.com")) {
             return "Developer";
         } else {
             return "Customer";
