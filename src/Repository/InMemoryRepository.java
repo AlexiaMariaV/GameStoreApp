@@ -10,7 +10,9 @@ public class InMemoryRepository<T extends HasId> implements IRepository<T> {
 
     @Override
     public void create(T obj) {
-        data.putIfAbsent(obj.getId(), obj);
+        if(data.putIfAbsent(obj.getId(), obj) != null) {
+            throw new IllegalArgumentException("Object already exists");
+        }
     }
 
     @Override
