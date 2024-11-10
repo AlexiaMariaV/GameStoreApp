@@ -1,105 +1,91 @@
 package Service;
-import Model.Admin;
-import Model.Customer;
-import Model.User;
+
+import Model.*;
 import Repository.IRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AccountService {
-    private final IRepository<User> userIRepository;
-    private User currentUser;
+    private final IRepository<User> userRepository;
+    private User loggedInUser;
 
-    public AccountService(IRepository<User> userIRepository) {
-        this.userIRepository = userIRepository;
+    public AccountService(IRepository<User> userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public List<User> getAllUsers() {
-        return userIRepository.getAll();
-    }
-
-    public boolean takenUsername(String username) {
-        for (User user : userIRepository.getAll()) {
-            if (user.getUsername().equals(username)) {
-                return true; // Username exists
-            }
-        }
-        return false; // Username is unique
-    }
-
-    public boolean adminEmail(String email) {
-        return email.endsWith("@adm.com");
-    }
-    public boolean developerEmail(String email) {
-        return email.endsWith("@dev.com");
-    }
-
-    public boolean createAccount(String role, String username, String email, String password) {
-        if (takenUsername(username)) {
+    public boolean signUp(String username, String email, String password) {
+        if (isEmailUsed(email)) {
+            System.out.println("Email-ul este deja folosit!");
             return false;
         }
 
-        int newID = userIRepository.getAll().size() + 1;
+        String role = determineRoleByEmail(email);
+
+        int userId = userRepository.getAll().size() + 1;
 
         User newUser;
-        if ("Customer".equalsIgnoreCase(role)) newUser = new Customer(newID, username, email, password, "Customer",0, 0, 0, 0);
-        else if ("Admin".equalsIgnoreCase(role) && adminEmail(email))
-            newUser = new Admin(newID, username, email, password);
-        else if ("Developer".equalsIgnoreCase(role) && developerEmail(email))
-            newUser = new Admin(newID, username, email, password);
+        switch (role) {
+            case "Admin":
+                newUser = new Admin(userId, username, email, password, role);
+                break;
+            case "Developer":
+                newUser = new Developer(userId, username, email, password, role, List.of());
+                break;
+            default:
+                newUser = new Customer(userId, username, email, password, role, 0.0f, List.of(), List.of(), new ShoppingCart(null, List.of()));
+                break;
+        }
 
-        else return false;
-
-
-        userIRepository.create(newUser);
+        userRepository.create(newUser);
+        System.out.println("Utilizator creat cu succes!");
         return true;
     }
-    public boolean login(String username, String password) {
-        for (User user : userIRepository.getAll()) {
-            if (user.getUsername().equals(username)) {
-                if (user.getPassword().equals(password)) {
-                    currentUser = user;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
 
-    public boolean logout() {
-        if (currentUser != null) {
-            currentUser = null;
+    public boolean logIn(String email, String password) {
+        Optional<User> user = userRepository.getAll().stream()
+                .filter(u -> u.getEmail().equals(email) && u.getPassword().equals(password))
+                .findFirst();
+
+        if (user.isPresent()) {
+            loggedInUser = user.get();
+            System.out.println("Autentificare reușită pentru utilizatorul: " + loggedInUser.getUsername());
             return true;
-        }
-        return false;
-    }
-
-
-    public boolean deleteAccount(int id) {
-        if (currentUser == null || !(currentUser instanceof Admin)) {
+        } else {
+            System.out.println("Email sau parolă incorecte!");
             return false;
         }
+    }
 
+    public void logOut() {
+        if (loggedInUser != null) {
+            System.out.println("Deconectare reușită pentru utilizatorul: " + loggedInUser.getUsername());
+            loggedInUser = null;
+        } else {
+            System.out.println("Niciun utilizator conectat!");
+        }
+    }
 
-        boolean found = false;
-        for (User user : userIRepository.getAll()) {
-            if (user.getUserId() == id) {
-                found = true;
-                break;
+    private boolean isEmailUsed(String email) {
+        for (User user : userRepository.getAll()) {
+            if (user.getEmail().equals(email)) {
+                return true;
             }
         }
-
-
-        if (found) {
-            userIRepository.delete(id);
-            return true;
-        }
         return false;
+    }
+
+    private String determineRoleByEmail(String email) {
+        if (email.endsWith("adm@gmail.com")) {
+            return "Admin";
+        } else if (email.endsWith("dev@gmail.com")) {
+            return "Developer";
+        } else {
+            return "Customer";
+        }
+    }
+
+    public User getLoggedInUser() {
+        return loggedInUser;
     }
 }
