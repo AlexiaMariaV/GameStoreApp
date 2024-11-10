@@ -2,9 +2,11 @@ package ConsoleApp;
 
 import Controller.AccountController;
 import Controller.GameController;
+import Controller.AdminController;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Service.GameService;
+import Service.AdminService;
 import Model.User;
 import Model.Game;
 import Model.GameGenre;
@@ -16,13 +18,17 @@ import java.util.Scanner;
 public class ConsoleApp {
     private final AccountController accountController;
     private final GameController gameController;
+    private final AdminController adminController;
     private final Scanner scanner;
 
     public ConsoleApp() {
+        InMemoryRepository<Game> repository = new InMemoryRepository<>();
         AccountService accountService = new AccountService(new InMemoryRepository<>());
-        GameService gameService = new GameService(new InMemoryRepository<>());
+        GameService gameService = new GameService(repository);
+        AdminService adminService = new AdminService(repository, accountService);
         this.accountController = new AccountController(accountService);
         this.gameController = new GameController(gameService);
+        this.adminController = new AdminController(adminService);
         this.scanner = new Scanner(System.in);
         initializeGames();
     }
@@ -50,7 +56,8 @@ public class ConsoleApp {
             System.out.println("5. Add Game");
             System.out.println("6. View Game");
             System.out.println("7. List All Games");
-            System.out.println("8. Exit");
+            System.out.println("8. Delete Game (Admin Only)");
+            System.out.println("9. Exit");
             System.out.print("Select option: ");
             int option = scanner.nextInt();
             scanner.nextLine();
@@ -63,7 +70,8 @@ public class ConsoleApp {
                 case 5 -> handleAddGame();
                 case 6 -> handleViewGame();
                 case 7 -> handleListAllGames();
-                case 8 -> {
+                case 8 -> handleDeleteGame(); // Admin game deletion
+                case 9 -> {
                     System.out.println("Exiting...");
                     return;
                 }
@@ -159,6 +167,21 @@ public class ConsoleApp {
                 System.out.println(game);
             }
         }
+    }
+
+    private void handleDeleteGame() {
+        // Verificăm dacă utilizatorul logat este un admin
+        if (accountController.getLoggedInUser() == null || !accountController.getLoggedInUser().getRole().equals("Admin")) {
+            System.out.println("Nu aveți permisiunea de a șterge jocuri.");
+            return;
+        }
+
+        System.out.print("Enter the game ID you want to delete: ");
+        int gameId = scanner.nextInt();
+        scanner.nextLine(); // consume newline
+
+        // Apelăm metoda de ștergere a jocului din AdminController
+        adminController.deleteGame(gameId);
     }
 
 
