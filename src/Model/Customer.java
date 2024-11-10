@@ -10,8 +10,8 @@ public class Customer extends User {
     private ShoppingCart shoppingCart;
 
 
-    public Customer(String username, Integer userId, String password, float fundWallet, List<Game> gamesLibrary, List<Review> reviews, ShoppingCart shoppingCart) {
-        super(username, userId, password);
+    public Customer( Integer userId, String username, String email, String password, String role, float fundWallet, List<Game> gamesLibrary, List<Review> reviews, ShoppingCart shoppingCart) {
+        super(userId, username, email, password, role);
         this.fundWallet = fundWallet;
         this.gamesLibrary = gamesLibrary;
         this.reviews = reviews;
@@ -53,9 +53,11 @@ public class Customer extends User {
     @Override
     public String toString() {
         return "Customer{" +
-                "username='" + username + '\'' +
-                ", userId=" + userId +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
                 ", fundWallet=" + fundWallet +
                 ", gamesLibrary=" + gamesLibrary +
                 ", reviews=" + reviews +
