@@ -5,8 +5,8 @@ import java.util.List;
 public class Developer extends User{
     private List<Game> publishedGames;
 
-    public Developer(String username, Integer userId, String password, List<Game> publishedGames) {
-        super(username, userId, password);
+    public Developer(Integer userId, String username, String email, String password, String role, List<Game> publishedGames) {
+        super(userId, username, email, password, role);
         this.publishedGames = publishedGames;
     }
 
@@ -21,10 +21,12 @@ public class Developer extends User{
     @Override
     public String toString() {
         return "Developer{" +
+                "userId=" + userId +
                 ", username='" + username + '\'' +
-                ", userId=" + userId +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                "publishedGames=" + publishedGames +
+                ", role='" + role + '\'' +
+                ", publishedGames=" + publishedGames +
                 '}';
     }
 
