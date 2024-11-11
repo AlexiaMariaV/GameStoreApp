@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Developer extends User{
     private List<Game> publishedGames;
@@ -32,6 +33,14 @@ public class Developer extends User{
                 ", role='" + role + '\'' +
                 ", publishedGames=" + publishedGames +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Developer developer = (Developer) o;
+        return Objects.equals(username, developer.username);
     }
 
     @Override
