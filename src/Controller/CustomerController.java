@@ -2,6 +2,7 @@ package Controller;
 
 import Model.Customer;
 import Model.Game;
+import Model.PaymentMethod;
 import Service.CustomerService;
 
 import java.util.List;
@@ -27,6 +28,10 @@ public class CustomerController {
 
     public List<Game> filterGamesByGenre(String genre) {
         return customerService.filterByGenre(genre);
+    }
+
+    public boolean addFundsToWallet(float amount, PaymentMethod paymentMethod) {
+        return customerService.addFundsToWallet(amount, paymentMethod);
     }
 
 }

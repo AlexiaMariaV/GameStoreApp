@@ -151,9 +151,10 @@ public class ConsoleApp {
         System.out.println("1. List All Games");
         System.out.println("2. Search Game by Name");
         System.out.println("3. Filter Games by Genre");
-        System.out.println("4. Delete Account");
-        System.out.println("5. Log Out");
-        System.out.println("6. Exit");
+        System.out.println("4. Add Funds to your wallet");
+        System.out.println("5. Delete Account");
+        System.out.println("6. Log Out");
+        System.out.println("7. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -162,16 +163,34 @@ public class ConsoleApp {
             case 1 -> handleListAllGames();
             case 2 -> handleSearchGameByName();
             case 3 -> handlefilterByGenre();
-            case 4 -> handleDeleteAccount();
-            case 5 -> {
+            case 4 -> handleAddFundsToWallet();
+            case 5 -> handleDeleteAccount();
+            case 6 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 6 -> {
+            case 7 -> {
                 System.out.println("Exiting...");
             }
             default -> System.out.println("Invalid option.");
+        }
+    }
+
+    private void handleAddFundsToWallet() {
+        System.out.print("Write the amount you want to add to your wallet: ");
+        float amount = scanner.nextFloat();
+        scanner.nextLine();
+
+        System.out.print("Choose the PaymentMethod (ex: Visa, PayPal, ApplePay): ");
+        String paymentType = scanner.nextLine();
+
+        PaymentMethod paymentMethod = new PaymentMethod(1, paymentType);
+
+        if (customerController.addFundsToWallet(amount, paymentMethod)) {
+            System.out.println("Funds have been successfully added to your wallet.");
+        } else {
+            System.out.println("Funds could not be added.");
         }
     }
 
