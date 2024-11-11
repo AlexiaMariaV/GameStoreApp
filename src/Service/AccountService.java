@@ -17,7 +17,7 @@ public class AccountService {
 
     public boolean signUp(String username, String email, String password) {
         if (isEmailUsed(email)) {
-            System.out.println("Email-ul este deja folosit!");
+            System.out.println("Email is already used!");
             return false;
         }
 
@@ -39,7 +39,7 @@ public class AccountService {
         }
 
         userRepository.create(newUser);
-        System.out.println("Utilizator creat cu succes!");
+        System.out.println("User created successfully!");
         return true;
     }
 
@@ -50,20 +50,20 @@ public class AccountService {
 
         if (user.isPresent()) {
             loggedInUser = user.get();
-            System.out.println("Autentificare reușită pentru utilizatorul: " + loggedInUser.getUsername());
+            System.out.println("Successful authentication for user: " + loggedInUser.getUsername());
             return true;
         } else {
-            System.out.println("Email sau parolă incorecte!");
+            System.out.println("Wrong email or password!");
             return false;
         }
     }
 
     public void logOut() {
         if (loggedInUser != null) {
-            System.out.println("Deconectare reușită pentru utilizatorul: " + loggedInUser.getUsername());
+            System.out.println("Successful log out for user: " + loggedInUser.getUsername());
             loggedInUser = null;
         } else {
-            System.out.println("Niciun utilizator conectat!");
+            System.out.println("No logged in user found!");
         }
     }
 
@@ -96,6 +96,28 @@ public class AccountService {
             System.out.println("No user is logged in to delete.");
             return false;
         }
+    }
+
+    public boolean deleteAnyAccount(String email) {
+
+        List<User> users = userRepository.getAll();
+        User userToDelete = null;
+
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                userToDelete = user;
+                break;
+            }
+        }
+
+        if (userToDelete == null) {
+            System.out.println("A user with given email does not exist.");
+            return false;
+        }
+
+        userRepository.delete(userToDelete.getId());
+        System.out.println("User " + userToDelete.getUsername() + " was successfully deleted.");
+        return true;
     }
 
 
