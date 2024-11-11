@@ -4,15 +4,15 @@ import Controller.AccountController;
 import Controller.GameController;
 import Controller.AdminController;
 import Controller.DeveloperController;
-import Model.Developer;
+import Controller.CustomerController;
+import Model.*;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Service.GameService;
 import Service.AdminService;
 import Service.DeveloperService;
-import Model.User;
-import Model.Game;
-import Model.GameGenre;
+import Service.CustomerService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,6 +24,8 @@ public class ConsoleApp {
     private final AdminController adminController;
     private final Scanner scanner;
     private final DeveloperController developerController;
+    private final CustomerController customerController;
+
 
     public ConsoleApp() {
         InMemoryRepository<Game> repository = new InMemoryRepository<>();
@@ -31,10 +33,12 @@ public class ConsoleApp {
         GameService gameService = new GameService(repository);
         AdminService adminService = new AdminService(repository);
         DeveloperService developerService = new DeveloperService(repository, null);
+        CustomerService customerService = new CustomerService(repository, null);
         this.accountController = new AccountController(accountService);
         this.gameController = new GameController(gameService);
         this.adminController = new AdminController(adminService);
         this.developerController = new DeveloperController(developerService);
+        this.customerController = new CustomerController(customerService);
         this.scanner = new Scanner(System.in);
         initializeGames();
     }
@@ -44,7 +48,7 @@ public class ConsoleApp {
                 new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, new ArrayList<>()),
                 new Game(2, "Space Warfare", "A space-themed shooter with intergalactic battles.", GameGenre.SHOOTER, 49.99f, new ArrayList<>()),
                 new Game(3, "Mystic Quest", "Solve mysteries in a fantasy world.", GameGenre.RPG, 39.99f, new ArrayList<>()),
-                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.SIMULATION, 19.99f, new ArrayList<>()),
+                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.RPG, 19.99f, new ArrayList<>()),
                 new Game(5, "Puzzle Challenge", "Solve various puzzles to progress through levels.", GameGenre.PUZZLE, 9.99f, new ArrayList<>())
         );
 
@@ -124,6 +128,39 @@ public class ConsoleApp {
         }
     }
 
+    private void showCustomerMenu() {
+        System.out.println("Customer Menu:");
+        System.out.println("1. List All Games");
+        System.out.println("2. Search Game by Name");
+        System.out.println("3. Filter Games by Genre");
+        System.out.println("4. Log Out");
+        System.out.println("5. Exit");
+
+        while (true) {
+            System.out.print("Select option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1 -> handleListAllGames();
+                case 2 -> handleSearchGameByName();
+                case 3 -> handlefilterByGenre();
+                case 4 -> {
+                    accountController.logOut();
+                    System.out.println("Returning to Main Menu...");
+                    showMainMenu();
+                    return;
+                }
+                case 5 -> {
+                    System.out.println("Exiting...");
+                    return;
+                }
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+
     private void handleSignUp() {
         System.out.print("Username: ");
         String username = scanner.nextLine();
@@ -156,7 +193,12 @@ public class ConsoleApp {
                 while (accountController.getLoggedInUser() != null && role.equals("Developer")) {
                     showDeveloperMenu();
                 }
-            } else {
+
+            } else if (role.equals("Customer")) {
+               while(accountController.getLoggedInUser() != null && role.equals("Customer"))
+                showCustomerMenu();
+            }
+            else {
                 System.out.println("Unknown role.");
             }
         } else {
@@ -266,6 +308,33 @@ public class ConsoleApp {
 
         developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
     }
+
+    private void handleSearchGameByName() {
+        System.out.print("Enter the name of the game: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
+        if (game != null) {
+            System.out.println("Game found: " + game);
+        } else {
+            System.out.println("Game not found.");
+        }
+    }
+
+    private void handlefilterByGenre() {
+        System.out.print("Enter genre: ");
+        String genre = scanner.nextLine();
+
+        List<Game> games = customerController.filterGamesByGenre(genre);
+        if (games.isEmpty()) {
+            System.out.println("No games found for the specified genre.");
+        } else {
+            System.out.println("Games in genre " + genre + ":");
+            for (Game game : games) {
+                System.out.println(game);
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
         new ConsoleApp().start();
