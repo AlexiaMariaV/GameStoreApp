@@ -30,5 +30,9 @@ public class AccountController {
         return accountService.deleteAccount();
     }
 
+    public boolean deleteAnyAccount(String email) {
+        return accountService.deleteAnyAccount(email);
+    }
+
 
 }

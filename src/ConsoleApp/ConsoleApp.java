@@ -86,10 +86,11 @@ public class ConsoleApp {
         System.out.println("\nAdmin Menu:");
         System.out.println("1. View Game");
         System.out.println("2. List All Games");
-        System.out.println("3. Delete Game (Admin Only)");
+        System.out.println("3. Delete Game");
         System.out.println("4. Delete Account");
-        System.out.println("5. Log Out");
-        System.out.println("6. Exit");
+        System.out.println("5. Delete Any Account by Email");
+        System.out.println("6. Log Out");
+        System.out.println("7. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -99,8 +100,16 @@ public class ConsoleApp {
             case 2 -> handleListAllGames();
             case 3 -> handleDeleteGame();
             case 4 -> handleDeleteAccount();
-            case 5 -> accountController.logOut();
-            case 6 -> System.out.println("Exiting...");
+            case 5 -> handleDeleteAnyAccount();
+            case 6 -> {
+                accountController.logOut();
+                System.out.println("Returning to Main Menu...");
+                showMainMenu();
+            }
+            case 7 -> {
+                System.out.println("Exiting...");
+                System.exit(0);
+            }
             default -> System.out.println("Invalid option.");
         }
     }
@@ -109,10 +118,11 @@ public class ConsoleApp {
         System.out.println("\nDeveloper Menu:");
         System.out.println("1. View Game");
         System.out.println("2. List All Games");
-        System.out.println("3. Publish Game (Developer Only)");
-        System.out.println("4. Modify Game (Developer Only)");
-        System.out.println("5. Log Out");
-        System.out.println("6. Exit");
+        System.out.println("3. Publish Game");
+        System.out.println("4. Modify Game");
+        System.out.println("5. Delete Account");
+        System.out.println("6. Log Out");
+        System.out.println("7. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -122,41 +132,46 @@ public class ConsoleApp {
             case 2 -> handleListAllGames();
             case 3 -> handlePublishGame();
             case 4 -> handleModifyGame();
-            case 5 -> accountController.logOut();
-            case 6 -> System.out.println("Exiting...");
+            case 5 -> handleDeleteAccount();
+            case 6 -> {
+                accountController.logOut();
+                System.out.println("Returning to Main Menu...");
+                showMainMenu();
+            }
+            case 7 -> {
+                System.out.println("Exiting...");
+                System.exit(0);
+            }
             default -> System.out.println("Invalid option.");
         }
     }
 
     private void showCustomerMenu() {
-        System.out.println("Customer Menu:");
+        System.out.println("\nCustomer Menu:");
         System.out.println("1. List All Games");
         System.out.println("2. Search Game by Name");
         System.out.println("3. Filter Games by Genre");
-        System.out.println("4. Log Out");
-        System.out.println("5. Exit");
+        System.out.println("4. Delete Account");
+        System.out.println("5. Log Out");
+        System.out.println("6. Exit");
+        System.out.print("Select option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();
 
-        while (true) {
-            System.out.print("Select option: ");
-            int option = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (option) {
-                case 1 -> handleListAllGames();
-                case 2 -> handleSearchGameByName();
-                case 3 -> handlefilterByGenre();
-                case 4 -> {
-                    accountController.logOut();
-                    System.out.println("Returning to Main Menu...");
-                    showMainMenu();
-                    return;
-                }
-                case 5 -> {
-                    System.out.println("Exiting...");
-                    return;
-                }
-                default -> System.out.println("Invalid option.");
+        switch (option) {
+            case 1 -> handleListAllGames();
+            case 2 -> handleSearchGameByName();
+            case 3 -> handlefilterByGenre();
+            case 4 -> handleDeleteAccount();
+            case 5 -> {
+                accountController.logOut();
+                System.out.println("Returning to Main Menu...");
+                showMainMenu();
             }
+            case 6 -> {
+                System.out.println("Exiting...");
+            }
+            default -> System.out.println("Invalid option.");
         }
     }
 
@@ -221,10 +236,23 @@ public class ConsoleApp {
         }
     }
 
+    private void handleDeleteAnyAccount() {
+
+        System.out.print("Please enter the email of the user whose account you would like to delete: ");
+        String email = scanner.nextLine();
+
+        if (accountController.deleteAnyAccount(email)) {
+            System.out.println("The account has been deleted.");
+        } else {
+            System.out.println("The account could not be deleted. Please check the email.");
+        }
+
+    }
+
     private void handlePublishGame(){
         User loggedUser = accountController.getLoggedInUser();
         if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
-            System.out.println("Nu aveți permisiunea de a adauga jocuri.");
+            System.out.println("You don't have permission to publish games.");
             return;
         }
 
