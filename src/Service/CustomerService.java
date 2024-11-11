@@ -2,6 +2,7 @@ package Service;
 
 import Model.Customer;
 import Model.Game;
+import Model.PaymentMethod;
 import Repository.IRepository;
 
 import java.util.ArrayList;
@@ -46,5 +47,23 @@ public class CustomerService {
 
     public Customer getLoggedInCustomer() {
         return loggedInCustomer;
+    }
+
+    public boolean addFundsToWallet(float amount, PaymentMethod paymentMethod) {
+        if (loggedInCustomer == null) {
+            System.out.println("Niciun client conectat.");
+            return false;
+        }
+
+        if (amount <= 0) {
+            System.out.println("Amount must be greater than 0.");
+            return false;
+        }
+
+        float currentFunds = loggedInCustomer.getFundWallet();
+        loggedInCustomer.setFundWallet(currentFunds + amount);
+        System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
+        System.out.println("Current amount: " + loggedInCustomer.getFundWallet());
+        return true;
     }
 }
