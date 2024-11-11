@@ -4,15 +4,13 @@ import Controller.AccountController;
 import Controller.GameController;
 import Controller.AdminController;
 import Controller.DeveloperController;
-import Model.Developer;
+import Model.*;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Service.GameService;
 import Service.AdminService;
 import Service.DeveloperService;
-import Model.User;
-import Model.Game;
-import Model.GameGenre;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -37,20 +35,34 @@ public class ConsoleApp {
         this.developerController = new DeveloperController(developerService);
         this.scanner = new Scanner(System.in);
         initializeGames();
+        initializeAdmins();
+        initializeDevelopers();
     }
 
     private void initializeGames() {
+        Developer developer1 = new Developer(1, "TraianBasescu", "base@dev.com", "bere", "Developer", new ArrayList<>());
+        Developer developer2 = new Developer(2, "Bob", "bobby@dev.com", "dob", "Developer", new ArrayList<>());
+
         List<Game> sampleGames = List.of(
-                new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, new ArrayList<>()),
-                new Game(2, "Space Warfare", "A space-themed shooter with intergalactic battles.", GameGenre.SHOOTER, 49.99f, new ArrayList<>()),
-                new Game(3, "Mystic Quest", "Solve mysteries in a fantasy world.", GameGenre.RPG, 39.99f, new ArrayList<>()),
-                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.SIMULATION, 19.99f, new ArrayList<>()),
-                new Game(5, "Puzzle Challenge", "Solve various puzzles to progress through levels.", GameGenre.PUZZLE, 9.99f, new ArrayList<>())
+                new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, developer1, new ArrayList<>()),
+                new Game(2, "Space Warfare", "A space-themed shooter with intergalactic battles.", GameGenre.SHOOTER, 49.99f, developer1, new ArrayList<>()),
+                new Game(3, "Mystic Quest", "Solve mysteries in a fantasy world.", GameGenre.RPG, 39.99f, developer2, new ArrayList<>()),
+                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.SIMULATION, 19.99f, developer2, new ArrayList<>()),
+                new Game(5, "Puzzle Challenge", "Solve various puzzles to progress through levels.", GameGenre.PUZZLE, 9.99f, developer1, new ArrayList<>())
         );
 
         for (Game game : sampleGames) {
             gameController.addGame(game);
         }
+    }
+
+    private void initializeAdmins() {
+        accountController.signUp("SabrinaCarpenter", "espresso@adm.com", "coffee");
+    }
+
+    private void initializeDevelopers() {
+        accountController.signUp("TraianBasescu", "base@dev.com", "bere");
+        accountController.signUp("Bob", "bobby@dev.com", "dob");
     }
 
     public void start() {
@@ -142,6 +154,8 @@ public class ConsoleApp {
             return;
         }
 
+        Developer developer = (Developer) loggedUser;
+
         System.out.print("Nume joc: ");
         String gameName = scanner.nextLine();
         System.out.print("Descriere joc: ");
@@ -153,10 +167,9 @@ public class ConsoleApp {
         float price = scanner.nextFloat();
         scanner.nextLine();
 
-        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
+        Game game = new Game(null, gameName, gameDescription, gameGenre, price, developer, List.of());
 
-        Developer developer = (Developer) loggedUser;
-        developerController.setDeveloper(developer);
+        //developerController.setDeveloper(developer);
         developerController.publishGame(game);
     }
 
@@ -203,6 +216,9 @@ public class ConsoleApp {
             System.out.println("You are not logged in.");
             return;
         }
+
+        Developer developer = (Developer) loggedUser;
+
         System.out.print("Game ID: ");
         int gameID = scanner.nextInt();
         scanner.nextLine();
@@ -210,13 +226,13 @@ public class ConsoleApp {
         String newName = scanner.nextLine();
         System.out.print("New Game description: ");
         String newDescription = scanner.nextLine();
-        System.out.println("New Game genre: ");
+        System.out.print("New Game genre: ");
         String newGenre = scanner.nextLine();
         System.out.print("New Price: ");
         float newPrice = scanner.nextFloat();
         scanner.nextLine();
 
-        Developer developer = (Developer) loggedUser;
+        //Developer developer = (Developer) loggedUser;
         developerController.setDeveloper(developer);
 
 

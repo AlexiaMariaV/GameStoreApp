@@ -10,15 +10,17 @@ public class Game implements HasId {
     private String gameDescription;
     private GameGenre gameGenre;
     private float price;
+    private Developer developer;
     List<Review> reviews;
 
 
-    public Game(Integer gameId, String gameName, String gameDescription, GameGenre gameGenre, float price, List<Review> reviews) {
+    public Game(Integer gameId, String gameName, String gameDescription, GameGenre gameGenre, float price, Developer developer, List<Review> reviews) {
         this.gameId = gameId;
         this.gameName = gameName;
         this.gameDescription = gameDescription;
         this.gameGenre = gameGenre;
         this.price = price;
+        this.developer = developer;
         this.reviews = reviews;
     }
 
@@ -62,6 +64,14 @@ public class Game implements HasId {
         this.price = price;
     }
 
+    public Developer getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(Developer developer) {
+        this.developer = developer;
+    }
+
     public List<Review> getReviews() {return reviews;}
 
     public void setReviews(List<Review> reviews) {this.reviews = reviews;}
@@ -74,6 +84,7 @@ public class Game implements HasId {
                 ", gameDescription='" + gameDescription + '\'' +
                 ", gameGenre='" + gameGenre + '\'' +
                 ", price=" + price +
+                ", developer=" + developer +
                 '}';
     }
 
