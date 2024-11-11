@@ -4,13 +4,15 @@ import Controller.AccountController;
 import Controller.GameController;
 import Controller.AdminController;
 import Controller.DeveloperController;
-import Model.*;
+import Model.Developer;
 import Repository.InMemoryRepository;
 import Service.AccountService;
 import Service.GameService;
 import Service.AdminService;
 import Service.DeveloperService;
-
+import Model.User;
+import Model.Game;
+import Model.GameGenre;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -35,20 +37,15 @@ public class ConsoleApp {
         this.developerController = new DeveloperController(developerService);
         this.scanner = new Scanner(System.in);
         initializeGames();
-        initializeAdmins();
-        initializeDevelopers();
     }
 
     private void initializeGames() {
-        Developer developer1 = new Developer(1, "TraianBasescu", "base@dev.com", "bere", "Developer", new ArrayList<>());
-        Developer developer2 = new Developer(2, "Bob", "bobby@dev.com", "dob", "Developer", new ArrayList<>());
-
         List<Game> sampleGames = List.of(
-                new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, developer1, new ArrayList<>()),
-                new Game(2, "Space Warfare", "A space-themed shooter with intergalactic battles.", GameGenre.SHOOTER, 49.99f, developer1, new ArrayList<>()),
-                new Game(3, "Mystic Quest", "Solve mysteries in a fantasy world.", GameGenre.RPG, 39.99f, developer2, new ArrayList<>()),
-                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.SIMULATION, 19.99f, developer2, new ArrayList<>()),
-                new Game(5, "Puzzle Challenge", "Solve various puzzles to progress through levels.", GameGenre.PUZZLE, 9.99f, developer1, new ArrayList<>())
+                new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, new ArrayList<>()),
+                new Game(2, "Space Warfare", "A space-themed shooter with intergalactic battles.", GameGenre.SHOOTER, 49.99f, new ArrayList<>()),
+                new Game(3, "Mystic Quest", "Solve mysteries in a fantasy world.", GameGenre.RPG, 39.99f, new ArrayList<>()),
+                new Game(4, "Farm Builder", "Create and manage your own virtual farm.", GameGenre.SIMULATION, 19.99f, new ArrayList<>()),
+                new Game(5, "Puzzle Challenge", "Solve various puzzles to progress through levels.", GameGenre.PUZZLE, 9.99f, new ArrayList<>())
         );
 
         for (Game game : sampleGames) {
@@ -56,47 +53,74 @@ public class ConsoleApp {
         }
     }
 
-    private void initializeAdmins() {
-        accountController.signUp("SabrinaCarpenter", "espresso@adm.com", "coffee");
-    }
-
-    private void initializeDevelopers() {
-        accountController.signUp("TraianBasescu", "base@dev.com", "bere");
-        accountController.signUp("Bob", "bobby@dev.com", "dob");
-    }
-
     public void start() {
         while (true) {
-            System.out.println("1. Sign Up");
-            System.out.println("2. Log In");
-            System.out.println("3. Log Out");
-            System.out.println("4. Delete Account");
-            System.out.println("5. Add Game (Developer Only)");
-            System.out.println("6. View Game");
-            System.out.println("7. List All Games");
-            System.out.println("8. Delete Game (Admin Only)");
-            System.out.println("9. Modify Game (Developer Only)");
-            System.out.println("10. Exit");
-            System.out.print("Select option: ");
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            showMainMenu();
+        }
+    }
+    private void showMainMenu() {
+        System.out.println("\nMain Menu:");
+        System.out.println("1. Sign Up");
+        System.out.println("2. Log In");
+        System.out.println("3. Exit");
+        System.out.print("Select option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();
 
-            switch (option) {
-                case 1 -> handleSignUp();
-                case 2 -> handleLogIn();
-                case 3 -> handleLogOut();
-                case 4 -> handleDeleteAccount();
-                case 5 -> handlePublishGame();
-                case 6 -> handleViewGame();
-                case 7 -> handleListAllGames();
-                case 8 -> handleDeleteGame();
-                case 9 -> handleModifyGame();
-                case 10 -> {
-                    System.out.println("Exiting...");
-                    return;
-                }
-                default -> System.out.println("Invalid option.");
+        switch (option) {
+            case 1 -> handleSignUp();
+            case 2 -> handleLogIn();
+            case 3 -> {
+                System.out.println("Exiting...");
+                System.exit(0);
             }
+            default -> System.out.println("Invalid option.");
+        }
+    }
+
+    private void showAdminMenu() {
+        System.out.println("\nAdmin Menu:");
+        System.out.println("1. View Game");
+        System.out.println("2. List All Games");
+        System.out.println("3. Delete Game (Admin Only)");
+        System.out.println("4. Delete Account");
+        System.out.println("5. Log Out");
+        System.out.println("6. Exit");
+        System.out.print("Select option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (option) {
+            case 1 -> handleViewGame();
+            case 2 -> handleListAllGames();
+            case 3 -> handleDeleteGame();
+            case 4 -> handleDeleteAccount();
+            case 5 -> accountController.logOut();
+            case 6 -> System.out.println("Exiting...");
+            default -> System.out.println("Invalid option.");
+        }
+    }
+
+    private void showDeveloperMenu() {
+        System.out.println("\nDeveloper Menu:");
+        System.out.println("1. View Game");
+        System.out.println("2. List All Games");
+        System.out.println("3. Publish Game (Developer Only)");
+        System.out.println("4. Modify Game (Developer Only)");
+        System.out.println("5. Log Out");
+        System.out.println("6. Exit");
+        System.out.print("Select option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (option) {
+            case 1 -> handleViewGame();
+            case 2 -> handleListAllGames();
+            case 3 -> handlePublishGame();
+            case 4 -> handleModifyGame();
+            case 5 -> accountController.logOut();
+            case 6 -> System.out.println("Exiting...");
+            default -> System.out.println("Invalid option.");
         }
     }
 
@@ -123,13 +147,21 @@ public class ConsoleApp {
 
         if (accountController.logIn(email, password)) {
             System.out.println("Login successful!");
+            String role = accountController.getLoggedInUser().getRole();
+            if (role.equals("Admin")) {
+                while (accountController.getLoggedInUser() != null && role.equals("Admin")) {
+                    showAdminMenu();
+                }
+            } else if (role.equals("Developer")) {
+                while (accountController.getLoggedInUser() != null && role.equals("Developer")) {
+                    showDeveloperMenu();
+                }
+            } else {
+                System.out.println("Unknown role.");
+            }
         } else {
             System.out.println("Invalid email or password.");
         }
-    }
-
-    private void handleLogOut() {
-        accountController.logOut();
     }
 
     private void handleDeleteAccount() {
@@ -154,8 +186,6 @@ public class ConsoleApp {
             return;
         }
 
-        Developer developer = (Developer) loggedUser;
-
         System.out.print("Nume joc: ");
         String gameName = scanner.nextLine();
         System.out.print("Descriere joc: ");
@@ -167,9 +197,10 @@ public class ConsoleApp {
         float price = scanner.nextFloat();
         scanner.nextLine();
 
-        Game game = new Game(null, gameName, gameDescription, gameGenre, price, developer, List.of());
+        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
 
-        //developerController.setDeveloper(developer);
+        Developer developer = (Developer) loggedUser;
+        developerController.setDeveloper(developer);
         developerController.publishGame(game);
     }
 
@@ -216,9 +247,6 @@ public class ConsoleApp {
             System.out.println("You are not logged in.");
             return;
         }
-
-        Developer developer = (Developer) loggedUser;
-
         System.out.print("Game ID: ");
         int gameID = scanner.nextInt();
         scanner.nextLine();
@@ -226,13 +254,13 @@ public class ConsoleApp {
         String newName = scanner.nextLine();
         System.out.print("New Game description: ");
         String newDescription = scanner.nextLine();
-        System.out.print("New Game genre: ");
+        System.out.println("New Game genre: ");
         String newGenre = scanner.nextLine();
         System.out.print("New Price: ");
         float newPrice = scanner.nextFloat();
         scanner.nextLine();
 
-        //Developer developer = (Developer) loggedUser;
+        Developer developer = (Developer) loggedUser;
         developerController.setDeveloper(developer);
 
 
@@ -243,4 +271,3 @@ public class ConsoleApp {
         new ConsoleApp().start();
     }
 }
-

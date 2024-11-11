@@ -25,6 +25,16 @@ public class DeveloperService {
             return false;
         }
 
+        // Check if a game with the same name already exists
+        boolean gameExists = gameRepository.getAll().stream()
+                .anyMatch(existingGame -> existingGame.getGameName().equalsIgnoreCase(game.getGameName()));
+
+        if (gameExists) {
+            System.out.println("A game with this name already exists.");
+            return false;
+        }
+
+        // Assign a unique ID based on the current size + 1
         game.setGameId(gameRepository.getAll().size() + 1);
         gameRepository.create(game);
         loggedInDeveloper.addPublishedGame(game);
