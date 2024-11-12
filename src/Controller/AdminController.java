@@ -11,7 +11,6 @@ public class AdminController {
     }
 
     public void deleteGame(int gameId) {
-        // Apelăm metoda de ștergere a jocului din AdminService
         adminService.deleteGame(gameId);
     }
 }

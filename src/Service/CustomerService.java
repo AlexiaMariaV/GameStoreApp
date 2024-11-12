@@ -51,7 +51,7 @@ public class CustomerService {
 
     public boolean addFundsToWallet(float amount, PaymentMethod paymentMethod) {
         if (loggedInCustomer == null) {
-            System.out.println("Niciun client conectat.");
+            System.out.println("No user logged in.");
             return false;
         }
 
@@ -65,5 +65,13 @@ public class CustomerService {
         System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
         System.out.println("Current amount: " + loggedInCustomer.getFundWallet());
         return true;
+    }
+
+    public float getWalletBalance() {
+        if (loggedInCustomer == null) {
+            System.out.println("No user logged in.");
+            return 0;
+        }
+        return loggedInCustomer.getFundWallet();
     }
 }

@@ -90,7 +90,7 @@ public class AccountService {
         if (loggedInUser != null) {
             userRepository.delete(loggedInUser.getId());
             System.out.println("Account deleted successfully for user: " + loggedInUser.getUsername());
-            loggedInUser = null;  // Log out the user after deleting the account
+            loggedInUser = null;
             return true;
         } else {
             System.out.println("No user is logged in to delete.");

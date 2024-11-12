@@ -10,7 +10,6 @@ public class AdminService {
         this.gameRepository = gameRepository;
     }
 
-    // Modificăm această metodă pentru a accepta gameId ca parametru
     public void deleteGame(int gameId) {
         Game game = gameRepository.get(gameId);
         if (game == null) {
