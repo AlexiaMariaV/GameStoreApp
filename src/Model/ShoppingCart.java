@@ -2,9 +2,20 @@ package Model;
 
 import java.util.List;
 
+/**
+ * Represents a shopping cart for a customer, containing a list of games they wish to purchase.
+ */
+
 public class ShoppingCart {
     private List<Game> listOfGames;
     private Customer customer;
+
+    /**
+     * Constructs a shopping cart for the specified customer and game list.
+     *
+     * @param customer    The customer who owns the cart.
+     * @param listOfGames The list of games in the cart.
+     */
 
     public ShoppingCart(Customer customer, List<Game> listOfGames) {
         this.customer = customer;

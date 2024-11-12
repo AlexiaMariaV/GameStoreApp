@@ -3,12 +3,30 @@ package Model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a Customer user who can purchase games, add funds to their wallet, and leave reviews.
+ */
+
 public class Customer extends User {
 
     private float fundWallet;
     private List<Game> gamesLibrary;
     private List<Review> reviews;
     private ShoppingCart shoppingCart;
+
+    /**
+     * Constructs a Customer with the specified details.
+     *
+     * @param userId       The unique identifier for the customer.
+     * @param username     The username of the customer.
+     * @param email        The email of the customer.
+     * @param password     The password of the customer.
+     * @param role         The role of the customer ("Customer").
+     * @param fundWallet   The initial funds in the customer's wallet.
+     * @param gamesLibrary The list of games owned by the customer.
+     * @param reviews      The list of reviews written by the customer.
+     * @param shoppingCart The customer's shopping cart.
+     */
 
 
     public Customer( Integer userId, String username, String email, String password, String role, float fundWallet, List<Game> gamesLibrary, List<Review> reviews, ShoppingCart shoppingCart) {

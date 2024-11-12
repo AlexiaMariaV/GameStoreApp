@@ -1,8 +1,19 @@
 package Model;
 
+/**
+ * Represents a payment method used by a customer to add funds to their wallet.
+ */
+
 public class PaymentMethod implements HasId{
     private Integer paymentId;
     private String paymentType;
+
+    /**
+     * Constructs a PaymentMethod with a specified ID and type.
+     *
+     * @param paymentId   The unique identifier for the payment method.
+     * @param paymentType The type of payment method (e.g., Visa, PayPal).
+     */
 
 
     public PaymentMethod(Integer paymentId, String paymentType) {

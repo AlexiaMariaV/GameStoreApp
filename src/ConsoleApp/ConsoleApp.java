@@ -19,6 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * ConsoleApp class provides the main interface for interacting with the gaming platform
+ * through the console. It manages various user roles (Admin, Developer, Customer)
+ * and their associated actions, including purchasing, managing games, and account actions.
+ */
+
 
 public class ConsoleApp {
     private final AccountController accountController;
@@ -28,6 +34,10 @@ public class ConsoleApp {
     private final DeveloperController developerController;
     private final CustomerController customerController;
     private final ShoppingCartController shoppingCartController;
+
+    /**
+     * Constructs a ConsoleApp instance and initializes repositories, services, and controllers.
+     */
 
 
     public ConsoleApp() {
@@ -50,6 +60,10 @@ public class ConsoleApp {
         initializeGames();
     }
 
+    /**
+     * Initializes sample games to the repository for demonstration purposes.
+     */
+
     private void initializeGames() {
         List<Game> sampleGames = List.of(
                 new Game(1, "Cyber Adventure", "Explore a cyberpunk city filled with secrets.", GameGenre.ADVENTURE, 59.99f, new ArrayList<>()),
@@ -64,11 +78,20 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Starts the application, showing the main menu continuously.
+     */
+
     public void start() {
         while (true) {
             showMainMenu();
         }
     }
+
+    /**
+     * Displays the main menu for all users and handles sign-up, login, and exit.
+     */
+
     private void showMainMenu() {
         System.out.println("\nMain Menu:");
         System.out.println("1. Sign Up");
@@ -88,6 +111,10 @@ public class ConsoleApp {
             default -> System.out.println("Invalid option.");
         }
     }
+
+    /**
+     * Displays the Admin menu, providing options to manage games, discounts, and accounts.
+     */
 
     private void showAdminMenu() {
         System.out.println("\nAdmin Menu:");
@@ -123,6 +150,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays the Developer menu, allowing the developer to publish and modify games.
+     */
+
     private void showDeveloperMenu() {
         System.out.println("\nDeveloper Menu:");
         System.out.println("1. View Game");
@@ -155,6 +186,11 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays the Customer menu, where the customer can view games, manage wallet,
+     * add reviews, and make purchases.
+     */
+
     private void showCustomerMenu() {
         System.out.println("\nCustomer Menu:");
         System.out.println("1. List All Games");
@@ -175,7 +211,7 @@ public class ConsoleApp {
         switch (option) {
             case 1 -> handleListAllGames();
             case 2 -> handleSearchGameByName();
-            case 3 -> handlefilterByGenre();
+            case 3 -> handleFilterByGenre();
             case 4 -> handleAddFundsToWallet();
             case 5 -> handleViewWalletBalance();
             case 6 -> handleViewLibrary();
@@ -194,6 +230,11 @@ public class ConsoleApp {
             default -> System.out.println("Invalid option.");
         }
     }
+
+    /**
+     * Displays the Shopping Cart menu, allowing customers to add, remove games,
+     * and complete the checkout process.
+     */
 
     private void showShoppingCartMenu() {
         while (true) {
@@ -225,6 +266,9 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Allows customers to add a review to a game they own.
+     */
 
     private void handleAddReviewToGame() {
         System.out.print("Enter the name of the game to review: ");
@@ -247,6 +291,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Allows customers to view games they own in their library.
+     */
+
     private void handleViewLibrary() {
         List<Game> libraryGames = customerController.getGamesLibrary();
         if (libraryGames.isEmpty()) {
@@ -259,11 +307,18 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays the current wallet balance for the logged-in customer.
+     */
 
     private void handleViewWalletBalance() {
         float balance = customerController.getWalletBalance();
         System.out.println("Current funds: " + balance);
     }
+
+    /**
+     * Allows customers to add funds to their wallet using a specified payment method.
+     */
 
     private void handleAddFundsToWallet() {
         System.out.print("Write the amount you want to add to your wallet: ");
@@ -282,6 +337,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Allows Admin to apply a discount to a specified game.
+     */
+
     private void handleApplyDiscountToGame() {
         System.out.print("Enter the game ID: ");
         int gameId = scanner.nextInt();
@@ -292,6 +351,9 @@ public class ConsoleApp {
         adminController.applyDiscountToGame(gameId, discountPercentage);
     }
 
+    /**
+     * Handles user sign-up, allowing new users to create an account.
+     */
 
     private void handleSignUp() {
         System.out.print("Username: ");
@@ -307,6 +369,10 @@ public class ConsoleApp {
             System.out.println("Sign-up failed! Email may already be in use.");
         }
     }
+
+    /**
+     * Handles user login, verifying email and password for authentication.
+     */
 
     private void handleLogIn() {
         System.out.print("Email: ");
@@ -340,6 +406,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Handles account deletion for the currently logged-in user.
+     */
+
     private void handleDeleteAccount() {
         System.out.print("Are you sure you want to delete your account? (yes/no): ");
         String confirmation = scanner.nextLine().toLowerCase();
@@ -355,6 +425,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Allows Admin to delete any account by specifying the email.
+     */
+
     private void handleDeleteAnyAccount() {
 
         System.out.print("Please enter the email of the user whose account you would like to delete: ");
@@ -367,6 +441,10 @@ public class ConsoleApp {
         }
 
     }
+
+    /**
+     * Allows Developer to publish a new game to the platform.
+     */
 
     private void handlePublishGame(){
         User loggedUser = accountController.getLoggedInUser();
@@ -393,6 +471,10 @@ public class ConsoleApp {
         developerController.publishGame(game);
     }
 
+    /**
+     * Allows the user to view details of a specific game by its ID.
+     */
+
     private void handleViewGame() {
         System.out.print("Enter Game ID: ");
         Integer gameId = scanner.nextInt();
@@ -406,6 +488,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays a list of all available games.
+     */
+
     private void handleListAllGames() {
         List<Game> games = gameController.getAllGames();
         if (games.isEmpty()) {
@@ -417,6 +503,10 @@ public class ConsoleApp {
             }
         }
     }
+
+    /**
+     * Allows Admin to delete a specific game by its ID.
+     */
 
     private void handleDeleteGame() {
         if (accountController.getLoggedInUser() == null || !accountController.getLoggedInUser().getRole().equals("Admin")) {
@@ -430,6 +520,11 @@ public class ConsoleApp {
 
         adminController.deleteGame(gameId);
     }
+
+    /**
+     * Allows Developer to modify details of an existing game.
+     */
+
     private void handleModifyGame() {
         User loggedUser = accountController.getLoggedInUser();
         if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
@@ -456,6 +551,10 @@ public class ConsoleApp {
         developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
     }
 
+    /**
+     * Allows customers to search for a game by its name.
+     */
+
     private void handleSearchGameByName() {
         System.out.print("Enter the name of the game: ");
         String gameName = scanner.nextLine();
@@ -467,7 +566,11 @@ public class ConsoleApp {
         }
     }
 
-    private void handlefilterByGenre() {
+    /**
+     * Allows customers to filter games by genre and displays matching results.
+     */
+
+    private void handleFilterByGenre() {
         System.out.print("Enter genre: ");
         String genre = scanner.nextLine();
 
@@ -482,6 +585,9 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays the contents of the shopping cart.
+     */
 
     private void handleViewCart() {
         List<Game> cartGames = shoppingCartController.viewCartContents();
@@ -495,6 +601,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Adds a game to the customer's shopping cart.
+     */
+
     private void handleAddGameToCart() {
         System.out.print("Enter the name of the game to add to the cart: ");
         String gameName = scanner.nextLine();
@@ -506,6 +616,10 @@ public class ConsoleApp {
             System.out.println("Game not found.");
         }
     }
+
+    /**
+     * Removes a specified game from the customer's shopping cart.
+     */
 
     private void handleRemoveGameFromCart() {
         System.out.print("Enter the name of the game to remove from the cart: ");
@@ -519,10 +633,18 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Calculates and displays the total price of games in the shopping cart.
+     */
+
     private void handleViewCartTotalPrice() {
         float totalPrice = shoppingCartController.checkout();
         System.out.println("Total price of games in cart: $" + totalPrice);
     }
+
+    /**
+     * Finalizes the purchase process, deducting funds and transferring games to the customer library.
+     */
 
     private void handleCheckout() {
         float totalPrice = shoppingCartController.checkout();

@@ -1,8 +1,20 @@
 package Model;
 
+/**
+ * Represents a discount that can be applied to a game.
+ * Discounts are represented as percentages.
+ */
+
 public class Discount implements HasId{
     private Integer discountId;
     private float discountPercentage;
+
+    /**
+     * Constructs a discount with the specified discount ID and percentage.
+     *
+     * @param discountId         The unique identifier for the discount.
+     * @param discountPercentage The percentage of the discount.
+     */
 
     public Discount(Integer discountId, float discountPercentage) {
         this.discountId = discountId;
