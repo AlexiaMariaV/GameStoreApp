@@ -93,7 +93,7 @@ public class Game implements HasId {
                 ", gameDescription='" + gameDescription + '\'' +
                 ", gameGenre='" + gameGenre + '\'' +
                 ", price=" + getDiscountedPrice() +
-//                ", developer=" + developer +
+                ", reviews=" + reviews +
                 '}';
     }
 
