@@ -55,9 +55,8 @@ public class CustomerService {
             return false;
         }
 
-        if (amount <= 0) {
-            System.out.println("Amount must be greater than 0.");
-            return false;
+        if (amount > 0) {
+            System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
         }
 
         float currentFunds = loggedInCustomer.getFundWallet();
@@ -83,6 +82,13 @@ public class CustomerService {
             }
             gamesLibrary.add(game);
         }
+    }
+
+    public List<Game> getGamesLibrary() {
+        if (loggedInCustomer != null) {
+            return loggedInCustomer.getGamesLibrary();
+        }
+        return new ArrayList<>(); // Returnează o listă goală dacă utilizatorul nu este logat
     }
 
 }

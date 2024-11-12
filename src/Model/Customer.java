@@ -1,5 +1,6 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Customer extends User {
@@ -13,7 +14,7 @@ public class Customer extends User {
     public Customer( Integer userId, String username, String email, String password, String role, float fundWallet, List<Game> gamesLibrary, List<Review> reviews, ShoppingCart shoppingCart) {
         super(userId, username, email, password, role);
         this.fundWallet = fundWallet;
-        this.gamesLibrary = gamesLibrary;
+        this.gamesLibrary = new ArrayList<>(gamesLibrary);
         this.reviews = reviews;
         this.shoppingCart = shoppingCart;
     }
@@ -31,7 +32,7 @@ public class Customer extends User {
     }
 
     public void setGamesLibrary(List<Game> gamesLibrary) {
-        this.gamesLibrary = gamesLibrary;
+        this.gamesLibrary = new ArrayList<>(gamesLibrary);
     }
 
     public List<Review> getReviews() {

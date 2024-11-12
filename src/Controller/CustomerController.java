@@ -37,9 +37,12 @@ public class CustomerController {
         return customerService.getWalletBalance();
     }
 
-
     public void addGameToLibrary(Game game) {
         customerService.addGameToLibrary(game);
+    }
+
+    public List<Game> getGamesLibrary() {
+        return customerService.getGamesLibrary();
     }
 }
 
