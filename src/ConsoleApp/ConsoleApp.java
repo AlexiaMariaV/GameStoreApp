@@ -218,7 +218,7 @@ public class ConsoleApp {
                 case 6 -> handleCheckout();
                 case 7 -> {
                     System.out.println("Returning to Customer Menu...");
-                    return; // Exit Shopping Cart Menu
+                    return;
                 }
                 default -> System.out.println("Invalid option.");
             }
@@ -318,18 +318,18 @@ public class ConsoleApp {
             System.out.println("Login successful!");
             String role = accountController.getLoggedInUser().getRole();
             if (role.equals("Admin")) {
-                while (accountController.getLoggedInUser() != null && role.equals("Admin")) {
+                while (accountController.getLoggedInUser() != null) {
                     showAdminMenu();
                 }
             } else if (role.equals("Developer")) {
-                while (accountController.getLoggedInUser() != null && role.equals("Developer")) {
+                while (accountController.getLoggedInUser() != null) {
                     showDeveloperMenu();
                 }
 
             } else if (role.equals("Customer")) {
                 Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
                 customerController.setCustomer(loggedInCustomer);
-                while(accountController.getLoggedInUser() != null && role.equals("Customer"))
+                while(accountController.getLoggedInUser() != null)
                     showCustomerMenu();
             }
             else {
@@ -375,14 +375,14 @@ public class ConsoleApp {
             return;
         }
 
-        System.out.print("Nume joc: ");
+        System.out.print("Game name: ");
         String gameName = scanner.nextLine();
-        System.out.print("Descriere joc: ");
+        System.out.print("Game description: ");
         String gameDescription = scanner.nextLine();
-        System.out.print("Gen joc (ex: ACTION, ADVENTURE): ");
+        System.out.print("Game genre (ex: ACTION, ADVENTURE): ");
         String genreInput = scanner.nextLine();
         GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
-        System.out.print("Preț: ");
+        System.out.print("Price: ");
         float price = scanner.nextFloat();
         scanner.nextLine();
 
@@ -420,7 +420,7 @@ public class ConsoleApp {
 
     private void handleDeleteGame() {
         if (accountController.getLoggedInUser() == null || !accountController.getLoggedInUser().getRole().equals("Admin")) {
-            System.out.println("Nu aveți permisiunea de a șterge jocuri.");
+            System.out.println("You don't have permission to delete games.");
             return;
         }
 
@@ -433,7 +433,7 @@ public class ConsoleApp {
     private void handleModifyGame() {
         User loggedUser = accountController.getLoggedInUser();
         if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
-            System.out.println("You are not logged in.");
+            System.out.println("You don't have permission to modify games.");
             return;
         }
         System.out.print("Game ID: ");

@@ -2,10 +2,7 @@ package Controller;
 
 import Model.Developer;
 import Model.Game;
-import Model.GameGenre;
 import Service.DeveloperService;
-
-import java.util.List;
 import java.util.Scanner;
 
 public class DeveloperController {

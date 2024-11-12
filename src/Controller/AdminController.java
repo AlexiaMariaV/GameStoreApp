@@ -1,7 +1,6 @@
 package Controller;
 
 import Service.AdminService;
-import java.util.Scanner;
 
 public class AdminController {
     private final AdminService adminService;
