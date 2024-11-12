@@ -74,4 +74,15 @@ public class CustomerService {
         }
         return loggedInCustomer.getFundWallet();
     }
+    public void addGameToLibrary(Game game) {
+        if (loggedInCustomer != null) {
+            List<Game> gamesLibrary = loggedInCustomer.getGamesLibrary();
+            if (gamesLibrary == null) {
+                gamesLibrary = new ArrayList<>();
+                loggedInCustomer.setGamesLibrary(gamesLibrary);
+            }
+            gamesLibrary.add(game);
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ import Controller.GameController;
 import Controller.AdminController;
 import Controller.DeveloperController;
 import Controller.CustomerController;
+import Controller.ShoppingCartController;
 import Model.*;
 import Repository.InMemoryRepository;
 import Service.AccountService;
@@ -12,6 +13,7 @@ import Service.GameService;
 import Service.AdminService;
 import Service.DeveloperService;
 import Service.CustomerService;
+import Service.ShoppingCartService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ConsoleApp {
     private final Scanner scanner;
     private final DeveloperController developerController;
     private final CustomerController customerController;
+    private final ShoppingCartController shoppingCartController;
 
 
     public ConsoleApp() {
@@ -34,11 +37,15 @@ public class ConsoleApp {
         AdminService adminService = new AdminService(repository);
         DeveloperService developerService = new DeveloperService(repository, null);
         CustomerService customerService = new CustomerService(repository, null);
+        ShoppingCart placeholderCart = new ShoppingCart(null, new ArrayList<>());
+        Customer placeholderCustomer = new Customer(null, "placeholder", "placeholder@example.com", "password", "Customer",0.0f, new ArrayList<>(), new ArrayList<>(), placeholderCart );
+        ShoppingCartService shoppingCartService = new ShoppingCartService(placeholderCustomer);
         this.accountController = new AccountController(accountService);
         this.gameController = new GameController(gameService);
         this.adminController = new AdminController(adminService);
         this.developerController = new DeveloperController(developerService);
         this.customerController = new CustomerController(customerService);
+        this.shoppingCartController = new ShoppingCartController(shoppingCartService);
         this.scanner = new Scanner(System.in);
         initializeGames();
     }
@@ -155,9 +162,10 @@ public class ConsoleApp {
         System.out.println("3. Filter Games by Genre");
         System.out.println("4. Add Funds to your wallet");
         System.out.println("5. View Wallet Balance");
-        System.out.println("6. Delete Account");
-        System.out.println("7. Log Out");
-        System.out.println("8. Exit");
+        System.out.println("6. Make a Purchase");
+        System.out.println("7. Delete Account");
+        System.out.println("8. Log Out");
+        System.out.println("9. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -168,19 +176,51 @@ public class ConsoleApp {
             case 3 -> handlefilterByGenre();
             case 4 -> handleAddFundsToWallet();
             case 5 -> handleViewWalletBalance();
-            case 6 -> handleDeleteAccount();
-            case 7 -> {
+            case 6 -> showShoppingCartMenu();
+            case 7 -> handleDeleteAccount();
+            case 8 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 8 -> {
+            case 9 -> {
                 System.out.println("Exiting...");
                 System.exit(0);
             }
             default -> System.out.println("Invalid option.");
         }
     }
+
+    private void showShoppingCartMenu() {
+        while (true) {
+            System.out.println("\nShopping Cart Menu:");
+            System.out.println("1. List All Games");
+            System.out.println("2. View Cart");
+            System.out.println("3. Add Game to Cart");
+            System.out.println("4. Remove Game from Cart");
+            System.out.println("5. View Cart Total Price");
+            System.out.println("6. Checkout");
+            System.out.println("7. Return to Customer Menu");
+            System.out.print("Select option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1 -> handleListAllGames();
+                case 2 -> handleViewCart();
+                case 3 -> handleAddGameToCart();
+                case 4 -> handleRemoveGameFromCart();
+                case 5 -> handleViewCartTotalPrice();
+                case 6 -> handleCheckout();
+                case 7 -> {
+                    System.out.println("Returning to Customer Menu...");
+                    return; // Exit Shopping Cart Menu
+                }
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
 
     private void handleViewWalletBalance() {
         float balance = customerController.getWalletBalance();
@@ -404,6 +444,70 @@ public class ConsoleApp {
         }
     }
 
+
+    private void handleViewCart() {
+        List<Game> cartGames = shoppingCartController.viewCartContents();
+        if (cartGames.isEmpty()) {
+            System.out.println("Your cart is empty.");
+        } else {
+            System.out.println("Games in your cart:");
+            for (Game game : cartGames) {
+                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            }
+        }
+    }
+
+    private void handleAddGameToCart() {
+        System.out.print("Enter the name of the game to add to the cart: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
+        if (game != null) {
+            shoppingCartController.addGame(game);
+            System.out.println("Game added to cart: " + game.getGameName());
+        } else {
+            System.out.println("Game not found.");
+        }
+    }
+
+    private void handleRemoveGameFromCart() {
+        System.out.print("Enter the name of the game to remove from the cart: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
+        if (game != null) {
+            shoppingCartController.removeGame(game);
+            System.out.println("Game removed from cart: " + game.getGameName());
+        } else {
+            System.out.println("Game not found in cart.");
+        }
+    }
+
+    private void handleViewCartTotalPrice() {
+        float totalPrice = shoppingCartController.checkout();
+        System.out.println("Total price of games in cart: $" + totalPrice);
+    }
+
+    private void handleCheckout() {
+        float totalPrice = shoppingCartController.checkout();
+        float walletBalance = customerController.getWalletBalance();
+
+        if (walletBalance >= totalPrice) {
+
+            customerController.addFundsToWallet(-totalPrice, new PaymentMethod(1, "Wallet"));
+
+            List<Game> purchasedGames = shoppingCartController.viewCartContents();
+
+            for (Game game : purchasedGames) {
+                customerController.addGameToLibrary(game);
+            }
+
+            shoppingCartController.clearCart();
+
+            System.out.println("Checkout successful! Thank you for your purchase.");
+        } else {
+            System.out.println("Insufficient funds. Please add funds to your wallet.");
+        }
+
+    }
 
     public static void main(String[] args) {
         new ConsoleApp().start();

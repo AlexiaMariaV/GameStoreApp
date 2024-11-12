@@ -33,10 +33,13 @@ public class CustomerController {
     public boolean addFundsToWallet(float amount, PaymentMethod paymentMethod) {
         return customerService.addFundsToWallet(amount, paymentMethod);
     }
-
     public float getWalletBalance() {
         return customerService.getWalletBalance();
     }
 
+
+    public void addGameToLibrary(Game game) {
+        customerService.addGameToLibrary(game);
+    }
 }
 
