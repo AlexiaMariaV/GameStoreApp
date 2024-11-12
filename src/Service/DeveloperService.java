@@ -6,18 +6,39 @@ import Repository.IRepository;
 
 import java.util.List;
 
+/**
+ * Service class for developer-specific functions, such as publishing and modifying games.
+ */
+
 public class DeveloperService {
     private final IRepository<Game> gameRepository;
     private Developer loggedInDeveloper;
+
+    /**
+     * Constructs the DeveloperService with a game repository and logged-in developer.
+     * @param gameRepository The repository for managing games.
+     * @param loggedInDeveloper The currently logged-in developer.
+     */
 
     public DeveloperService(IRepository<Game> gameRepository, Developer loggedInDeveloper) {
         this.gameRepository = gameRepository;
         this.loggedInDeveloper = loggedInDeveloper;
     }
 
+    /**
+     * Sets the developer as the logged-in user.
+     * @param developer The developer to set as logged in.
+     */
+
     public void setDeveloper(Developer developer){
         this.loggedInDeveloper = developer;
     }
+
+    /**
+     * Publishes a new game by the developer.
+     * @param game The game to publish.
+     * @return true if the game is published successfully, false otherwise.
+     */
 
     public boolean publishGame(Game game) {
         if (loggedInDeveloper == null) {
@@ -40,6 +61,16 @@ public class DeveloperService {
         return true;
     }
 
+    /**
+     * Modifies an existing game if the developer owns it.
+     * @param gameId The ID of the game to modify.
+     * @param newName The new name for the game.
+     * @param newDescription The new description for the game.
+     * @param newGenre The new genre for the game.
+     * @param newPrice The new price for the game.
+     * @return true if the game is modified successfully, false otherwise.
+     */
+
     public boolean modifyGame(int gameId, String newName, String newDescription, String newGenre, float newPrice) {
 
         Game game = gameRepository.get(gameId);
@@ -53,6 +84,11 @@ public class DeveloperService {
         System.out.println("You don't have permission to modify this game or game not found.");
         return false;
     }
+
+    /**
+     * Retrieves the list of games published by the developer.
+     * @return A list of published games.
+     */
 
     public List<Game> getPublishedGames() {
         return loggedInDeveloper.getPublishedGames();

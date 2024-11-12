@@ -4,6 +4,11 @@ package Model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a video game that can be purchased by users.
+ * Each game has attributes such as name, genre, price, and reviews.
+ */
+
 public class Game implements HasId {
 
     private Integer gameId;
@@ -13,6 +18,17 @@ public class Game implements HasId {
     private float price;
     private Discount discount;
     List<Review> reviews;
+
+    /**
+     * Constructs a Game with the specified details.
+     *
+     * @param gameId          The unique identifier for the game.
+     * @param gameName        The name of the game.
+     * @param gameDescription The description of the game.
+     * @param gameGenre       The genre of the game (e.g., ACTION, ADVENTURE).
+     * @param price           The price of the game.
+     * @param reviews         A list of reviews for the game.
+     */
 
 
     public Game(Integer gameId, String gameName, String gameDescription, GameGenre gameGenre, float price, List<Review> reviews) {
@@ -59,6 +75,12 @@ public class Game implements HasId {
     public float getPrice() {
         return price;
     }
+
+    /**
+     * Calculates and returns the price of the game after applying any discount.
+     * @return The discounted price, or the original price if no discount is applied.
+     */
+
 
     public float getDiscountedPrice() {
         if (discount != null) {

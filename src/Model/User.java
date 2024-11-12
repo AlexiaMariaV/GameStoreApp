@@ -1,11 +1,26 @@
 package Model;
 
+/**
+ * Abstract class representing a user in the application.
+ * Users can have different roles, such as Admin, Developer, or Customer.
+ */
+
 public abstract class User implements HasId {
     protected String username;
     protected Integer userId;
     protected String password;
     protected String email;
     protected String role;
+
+    /**
+     * Constructs a User with the specified details.
+     *
+     * @param userId   The unique identifier for the user.
+     * @param username The username of the user.
+     * @param email    The email of the user.
+     * @param password The password of the user.
+     * @param role     The role of the user (Admin, Developer, Customer).
+     */
 
     public User(Integer userId, String username, String email, String password, String role) {
         this.userId = userId;

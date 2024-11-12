@@ -1,10 +1,24 @@
 package Model;
 
+/**
+ * Represents a review for a game, created by a customer.
+ * Each review includes the customer, the game reviewed, and the review text.
+ */
+
 public class Review implements HasId{
     private int reviewID;
     private String text;
     private Customer customer;
     private Game game;
+
+    /**
+     * Constructs a review with the specified details.
+     *
+     * @param reviewID The unique identifier for the review.
+     * @param text     The text content of the review.
+     * @param customer The customer who wrote the review.
+     * @param game     The game being reviewed.
+     */
 
     public Review(int reviewID, String text, Customer customer, Game game) {
         this.reviewID = reviewID;
