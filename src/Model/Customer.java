@@ -39,7 +39,7 @@ public class Customer extends User {
         return reviews;
     }
 
-    public void setReviews(List<Review> reviews) {
+    public void setReviews(List<Review> review) {
         this.reviews = reviews;
     }
 

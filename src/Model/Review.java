@@ -50,8 +50,8 @@ public class Review implements HasId{
         return "Review{" +
                 "reviewID=" + reviewID +
                 ", text='" + text + '\'' +
-                ", customer=" + customer +
-                ", game=" + game +
+                ", customer='" + (customer != null ? customer.getUsername() : "unknown") + '\'' +
+                ", game='" + (game != null ? game.getGameName() : "unknown") + '\'' +
                 '}';
     }
 

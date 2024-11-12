@@ -98,10 +98,31 @@ public class CustomerService {
             return false;
         }
 
+        // Check if the logged-in customer owns the game
         if (loggedInCustomer.getGamesLibrary().contains(game)) {
+            // Create a new review instance
             Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
-            game.getReviews().add(review);
-            loggedInCustomer.getReviews().add(review);
+
+            // Add the review to the game's reviews list
+            List<Review> gameReviews = game.getReviews();
+            if (gameReviews instanceof ArrayList) {
+                gameReviews.add(review);  // Adds the review if the list is mutable
+            } else {
+                // Create a new mutable list if the current one is immutable
+                gameReviews = new ArrayList<>(gameReviews);
+                gameReviews.add(review);
+                game.setReviews(gameReviews);  // Replace with mutable list
+            }
+
+            // Add the review to the customer's reviews list
+            List<Review> customerReviews = loggedInCustomer.getReviews();
+            if (customerReviews instanceof ArrayList) {
+                customerReviews.add(review);
+            } else {
+                customerReviews = new ArrayList<>(customerReviews);
+                customerReviews.add(review);
+                loggedInCustomer.setReviews(customerReviews);
+            }
 
             System.out.println("Review added successfully.");
             return true;
