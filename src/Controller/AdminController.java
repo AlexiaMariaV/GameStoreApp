@@ -13,4 +13,8 @@ public class AdminController {
     public void deleteGame(int gameId) {
         adminService.deleteGame(gameId);
     }
+
+    public void applyDiscountToGame(int gameId, float discountPercentage) {
+        adminService.applyDiscountToGame(gameId, discountPercentage);
+    }
 }
