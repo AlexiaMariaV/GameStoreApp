@@ -87,10 +87,11 @@ public class ConsoleApp {
         System.out.println("1. View Game");
         System.out.println("2. List All Games");
         System.out.println("3. Delete Game");
-        System.out.println("4. Delete Account");
-        System.out.println("5. Delete Any Account by Email");
-        System.out.println("6. Log Out");
-        System.out.println("7. Exit");
+        System.out.println("4. Apply Discount to Game");
+        System.out.println("5. Delete Account");
+        System.out.println("6. Delete Any Account by Email");
+        System.out.println("7. Log Out");
+        System.out.println("8. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -99,14 +100,15 @@ public class ConsoleApp {
             case 1 -> handleViewGame();
             case 2 -> handleListAllGames();
             case 3 -> handleDeleteGame();
-            case 4 -> handleDeleteAccount();
-            case 5 -> handleDeleteAnyAccount();
-            case 6 -> {
+            case 4 -> handleApplyDiscountToGame();
+            case 5 -> handleDeleteAccount();
+            case 6 -> handleDeleteAnyAccount();
+            case 7 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 7 -> {
+            case 8 -> {
                 System.out.println("Exiting...");
                 System.exit(0);
             }
@@ -200,6 +202,16 @@ public class ConsoleApp {
         } else {
             System.out.println("Funds could not be added.");
         }
+    }
+
+    private void handleApplyDiscountToGame() {
+        System.out.print("Enter the game ID: ");
+        int gameId = scanner.nextInt();
+        System.out.print("Enter discount percentage: ");
+        float discountPercentage = scanner.nextFloat();
+        scanner.nextLine();
+
+        adminController.applyDiscountToGame(gameId, discountPercentage);
     }
 
 

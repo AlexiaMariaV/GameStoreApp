@@ -10,6 +10,7 @@ public class Game implements HasId {
     private String gameDescription;
     private GameGenre gameGenre;
     private float price;
+    private Discount discount;
     //private Developer developer;
     List<Review> reviews;
 
@@ -60,8 +61,23 @@ public class Game implements HasId {
         return price;
     }
 
+    public float getDiscountedPrice() {
+        if (discount != null) {
+            return price * (1 - discount.getDiscountPercentage() / 100);
+        }
+        return price;
+    }
+
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
     }
 
 //    public Developer getDeveloper() {
@@ -83,7 +99,7 @@ public class Game implements HasId {
                 ", gameName='" + gameName + '\'' +
                 ", gameDescription='" + gameDescription + '\'' +
                 ", gameGenre='" + gameGenre + '\'' +
-                ", price=" + price +
+                ", price=" + getDiscountedPrice() +
 //                ", developer=" + developer +
                 '}';
     }
