@@ -162,10 +162,11 @@ public class ConsoleApp {
         System.out.println("3. Filter Games by Genre");
         System.out.println("4. Add Funds to your wallet");
         System.out.println("5. View Wallet Balance");
-        System.out.println("6. Make a Purchase");
-        System.out.println("7. Delete Account");
-        System.out.println("8. Log Out");
-        System.out.println("9. Exit");
+        System.out.println("6. View Games Library");
+        System.out.println("7. Make a Purchase");
+        System.out.println("8. Delete Account");
+        System.out.println("9. Log Out");
+        System.out.println("10. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -176,14 +177,15 @@ public class ConsoleApp {
             case 3 -> handlefilterByGenre();
             case 4 -> handleAddFundsToWallet();
             case 5 -> handleViewWalletBalance();
-            case 6 -> showShoppingCartMenu();
-            case 7 -> handleDeleteAccount();
-            case 8 -> {
+            case 6 -> handleViewLibrary();
+            case 7 -> showShoppingCartMenu();
+            case 8 -> handleDeleteAccount();
+            case 9 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 9 -> {
+            case 10 -> {
                 System.out.println("Exiting...");
                 System.exit(0);
             }
@@ -217,6 +219,18 @@ public class ConsoleApp {
                     return; // Exit Shopping Cart Menu
                 }
                 default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    private void handleViewLibrary() {
+        List<Game> libraryGames = customerController.getGamesLibrary();
+        if (libraryGames.isEmpty()) {
+            System.out.println("Your library is empty.");
+        } else {
+            System.out.println("Games in your library:");
+            for (Game game : libraryGames) {
+                System.out.println("- " + game.getGameName() + " ($" + game.getDiscountedPrice() + ")");
             }
         }
     }
@@ -490,10 +504,11 @@ public class ConsoleApp {
         float totalPrice = shoppingCartController.checkout();
         float walletBalance = customerController.getWalletBalance();
 
+        System.out.println("Wallet Balance: " + walletBalance);
+        System.out.println("Total Price of Cart: " + totalPrice);
+
         if (walletBalance >= totalPrice) {
-
             customerController.addFundsToWallet(-totalPrice, new PaymentMethod(1, "Wallet"));
-
             List<Game> purchasedGames = shoppingCartController.viewCartContents();
 
             for (Game game : purchasedGames) {
@@ -501,7 +516,6 @@ public class ConsoleApp {
             }
 
             shoppingCartController.clearCart();
-
             System.out.println("Checkout successful! Thank you for your purchase.");
         } else {
             System.out.println("Insufficient funds. Please add funds to your wallet.");

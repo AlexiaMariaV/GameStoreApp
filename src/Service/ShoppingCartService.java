@@ -32,7 +32,7 @@ public class ShoppingCartService {
     public float calculateTotalPrice() {
         float total = 0;
         for (Game game : shoppingCart.getListOfGames()) {
-            total += game.getPrice();
+            total += game.getDiscountedPrice();
         }
         return total;
     }
