@@ -38,15 +38,17 @@ public class GameService {
 
     private Integer generateNextId() {
         List<Game> allGames = gameRepository.getAll();
+
         if (allGames.isEmpty()) {
             return 1;
         }
 
-        Integer maxId = allGames.stream()
-                .mapToInt(Game::getId)
-                .max()
-                .orElse(0);
-
+        Integer maxId = 0;
+        for (Game game : allGames) {
+            if (game.getId() > maxId) {
+                maxId = game.getId();
+            }
+        }
         return maxId + 1;
     }
 

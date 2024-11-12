@@ -12,7 +12,6 @@ public class Game implements HasId {
     private GameGenre gameGenre;
     private float price;
     private Discount discount;
-    //private Developer developer;
     List<Review> reviews;
 
 
@@ -22,7 +21,6 @@ public class Game implements HasId {
         this.gameDescription = gameDescription;
         this.gameGenre = gameGenre;
         this.price = price;
-        //this.developer = developer;
         this.reviews = new ArrayList<>(reviews);
     }
 

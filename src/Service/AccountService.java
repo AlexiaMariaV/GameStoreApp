@@ -5,7 +5,6 @@ import Repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AccountService {
     private final IRepository<User> userRepository;
@@ -44,18 +43,15 @@ public class AccountService {
     }
 
     public boolean logIn(String email, String password) {
-        Optional<User> user = userRepository.getAll().stream()
-                .filter(u -> u.getEmail().equals(email) && u.getPassword().equals(password))
-                .findFirst();
-
-        if (user.isPresent()) {
-            loggedInUser = user.get();
-            System.out.println("Successful authentication for user: " + loggedInUser.getUsername());
-            return true;
-        } else {
-            System.out.println("Wrong email or password!");
-            return false;
+        for (User u : userRepository.getAll()) {
+            if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                loggedInUser = u;
+                System.out.println("Successful authentication for user: " + loggedInUser.getUsername());
+                return true;
+            }
         }
+        System.out.println("Wrong email or password!");
+        return false;
     }
 
     public void logOut() {

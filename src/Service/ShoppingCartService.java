@@ -15,7 +15,6 @@ public class ShoppingCartService {
     public void addGameToCart(Game game) {
         if (!shoppingCart.getListOfGames().contains(game)) {
             shoppingCart.getListOfGames().add(game);
-            System.out.println("Game added to cart: " + game.getGameName());
         } else {
             System.out.println("Game is already in the cart.");
         }
