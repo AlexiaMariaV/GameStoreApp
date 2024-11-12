@@ -3,6 +3,7 @@ package Service;
 import Model.Customer;
 import Model.Game;
 import Model.PaymentMethod;
+import Model.Review;
 import Repository.IRepository;
 
 import java.util.ArrayList;
@@ -88,7 +89,26 @@ public class CustomerService {
         if (loggedInCustomer != null) {
             return loggedInCustomer.getGamesLibrary();
         }
-        return new ArrayList<>(); // Returnează o listă goală dacă utilizatorul nu este logat
+        return new ArrayList<>();
+    }
+
+    public boolean addReviewToGame(Game game, String reviewText) {
+        if (loggedInCustomer == null) {
+            System.out.println("No user is logged in.");
+            return false;
+        }
+
+        if (loggedInCustomer.getGamesLibrary().contains(game)) {
+            Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
+            game.getReviews().add(review);
+            loggedInCustomer.getReviews().add(review);
+
+            System.out.println("Review added successfully.");
+            return true;
+        } else {
+            System.out.println("You can only review games that you own.");
+            return false;
+        }
     }
 
 }

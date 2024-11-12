@@ -164,9 +164,10 @@ public class ConsoleApp {
         System.out.println("5. View Wallet Balance");
         System.out.println("6. View Games Library");
         System.out.println("7. Make a Purchase");
-        System.out.println("8. Delete Account");
-        System.out.println("9. Log Out");
-        System.out.println("10. Exit");
+        System.out.println("8. Add Review to a game");
+        System.out.println("9. Delete Account");
+        System.out.println("10. Log Out");
+        System.out.println("11. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -179,13 +180,14 @@ public class ConsoleApp {
             case 5 -> handleViewWalletBalance();
             case 6 -> handleViewLibrary();
             case 7 -> showShoppingCartMenu();
-            case 8 -> handleDeleteAccount();
-            case 9 -> {
+            case 8 -> handleAddReviewToGame();
+            case 9 -> handleDeleteAccount();
+            case 10 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 10 -> {
+            case 11 -> {
                 System.out.println("Exiting...");
                 System.exit(0);
             }
@@ -220,6 +222,28 @@ public class ConsoleApp {
                 }
                 default -> System.out.println("Invalid option.");
             }
+        }
+    }
+
+
+    private void handleAddReviewToGame() {
+        System.out.print("Enter the name of the game to review: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
+
+        if (game == null) {
+            System.out.println("Game not found.");
+            return;
+        }
+
+        System.out.print("Enter your review: ");
+        String reviewText = scanner.nextLine();
+
+        boolean success = customerController.addReviewToGame(game, reviewText);
+        if (success) {
+            System.out.println("Review added successfully!");
+        } else {
+            System.out.println("Could not add review. Make sure you own the game.");
         }
     }
 

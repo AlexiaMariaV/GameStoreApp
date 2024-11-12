@@ -44,5 +44,9 @@ public class CustomerController {
     public List<Game> getGamesLibrary() {
         return customerService.getGamesLibrary();
     }
+
+    public boolean addReviewToGame(Game game, String reviewText) {
+        return customerService.addReviewToGame(game, reviewText);
+    }
 }
 

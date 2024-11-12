@@ -1,6 +1,7 @@
 package Model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game implements HasId {
@@ -22,7 +23,7 @@ public class Game implements HasId {
         this.gameGenre = gameGenre;
         this.price = price;
         //this.developer = developer;
-        this.reviews = reviews;
+        this.reviews = new ArrayList<>(reviews);
     }
 
     public Integer getGameId() {
@@ -80,17 +81,9 @@ public class Game implements HasId {
         this.discount = discount;
     }
 
-//    public Developer getDeveloper() {
-//        return developer;
-//    }
-
-//    public void setDeveloper(Developer developer) {
-//        this.developer = developer;
-//    }
-
     public List<Review> getReviews() {return reviews;}
 
-    public void setReviews(List<Review> reviews) {this.reviews = reviews;}
+    public void setReviews(List<Review> reviews) {this.reviews = new ArrayList<>(reviews);}
 
     @Override
     public String toString() {
