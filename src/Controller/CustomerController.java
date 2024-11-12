@@ -34,5 +34,9 @@ public class CustomerController {
         return customerService.addFundsToWallet(amount, paymentMethod);
     }
 
+    public float getWalletBalance() {
+        return customerService.getWalletBalance();
+    }
+
 }
 

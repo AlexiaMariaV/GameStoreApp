@@ -34,7 +34,6 @@ public class DeveloperService {
             return false;
         }
 
-        // Assign a unique ID based on the current size + 1
         game.setGameId(gameRepository.getAll().size() + 1);
         gameRepository.create(game);
         loggedInDeveloper.addPublishedGame(game);

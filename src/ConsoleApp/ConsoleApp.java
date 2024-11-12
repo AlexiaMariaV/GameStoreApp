@@ -152,9 +152,10 @@ public class ConsoleApp {
         System.out.println("2. Search Game by Name");
         System.out.println("3. Filter Games by Genre");
         System.out.println("4. Add Funds to your wallet");
-        System.out.println("5. Delete Account");
-        System.out.println("6. Log Out");
-        System.out.println("7. Exit");
+        System.out.println("5. View Wallet Balance");
+        System.out.println("6. Delete Account");
+        System.out.println("7. Log Out");
+        System.out.println("8. Exit");
         System.out.print("Select option: ");
         int option = scanner.nextInt();
         scanner.nextLine();
@@ -164,17 +165,24 @@ public class ConsoleApp {
             case 2 -> handleSearchGameByName();
             case 3 -> handlefilterByGenre();
             case 4 -> handleAddFundsToWallet();
-            case 5 -> handleDeleteAccount();
-            case 6 -> {
+            case 5 -> handleViewWalletBalance();
+            case 6 -> handleDeleteAccount();
+            case 7 -> {
                 accountController.logOut();
                 System.out.println("Returning to Main Menu...");
                 showMainMenu();
             }
-            case 7 -> {
+            case 8 -> {
                 System.out.println("Exiting...");
+                System.exit(0);
             }
             default -> System.out.println("Invalid option.");
         }
+    }
+
+    private void handleViewWalletBalance() {
+        float balance = customerController.getWalletBalance();
+        System.out.println("Current funds: " + balance);
     }
 
     private void handleAddFundsToWallet() {
@@ -229,8 +237,10 @@ public class ConsoleApp {
                 }
 
             } else if (role.equals("Customer")) {
-               while(accountController.getLoggedInUser() != null && role.equals("Customer"))
-                showCustomerMenu();
+                Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
+                customerController.setCustomer(loggedInCustomer);
+                while(accountController.getLoggedInUser() != null && role.equals("Customer"))
+                    showCustomerMenu();
             }
             else {
                 System.out.println("Unknown role.");
