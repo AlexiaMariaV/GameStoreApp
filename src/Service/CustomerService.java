@@ -185,11 +185,8 @@ public class CustomerService {
                 customerReviews.add(review);
                 loggedInCustomer.setReviews(customerReviews);
             }
-
-            System.out.println("Review added successfully.");
             return true;
         } else {
-            System.out.println("You can only review games that you own.");
             return false;
         }
     }
