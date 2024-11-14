@@ -38,17 +38,12 @@ public class AccountController {
      * @return true if login is successful, false otherwise.
      */
 
-    public boolean logIn(String email, String password) {
-        return accountService.logIn(email, password);
-    }
-
+    public String logIn(String email, String password) {return accountService.logIn(email, password);}
     /**
      * Logs out the currently logged-in user.
      */
 
-    public void logOut() {
-        accountService.logOut();
-    }
+    public boolean logOut() {return accountService.logOut();}
 
     /**
      * Retrieves the currently logged-in user.

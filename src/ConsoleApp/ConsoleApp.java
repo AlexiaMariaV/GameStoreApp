@@ -1,19 +1,9 @@
 package ConsoleApp;
 
-import Controller.AccountController;
-import Controller.GameController;
-import Controller.AdminController;
-import Controller.DeveloperController;
-import Controller.CustomerController;
-import Controller.ShoppingCartController;
+import Controller.*;
 import Model.*;
 import Repository.InMemoryRepository;
-import Service.AccountService;
-import Service.GameService;
-import Service.AdminService;
-import Service.DeveloperService;
-import Service.CustomerService;
-import Service.ShoppingCartService;
+import Service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,10 +94,7 @@ public class ConsoleApp {
         switch (option) {
             case 1 -> handleSignUp();
             case 2 -> handleLogIn();
-            case 3 -> {
-                System.out.println("Exiting...");
-                System.exit(0);
-            }
+            case 3 -> exitApp();
             default -> System.out.println("Invalid option.");
         }
     }
@@ -137,15 +124,8 @@ public class ConsoleApp {
             case 4 -> handleApplyDiscountToGame();
             case 5 -> handleDeleteAccount();
             case 6 -> handleDeleteAnyAccount();
-            case 7 -> {
-                accountController.logOut();
-                System.out.println("Returning to Main Menu...");
-                showMainMenu();
-            }
-            case 8 -> {
-                System.out.println("Exiting...");
-                System.exit(0);
-            }
+            case 7 -> handleLogOut();
+            case 8 -> exitApp();
             default -> System.out.println("Invalid option.");
         }
     }
@@ -173,15 +153,8 @@ public class ConsoleApp {
             case 3 -> handlePublishGame();
             case 4 -> handleModifyGame();
             case 5 -> handleDeleteAccount();
-            case 6 -> {
-                accountController.logOut();
-                System.out.println("Returning to Main Menu...");
-                showMainMenu();
-            }
-            case 7 -> {
-                System.out.println("Exiting...");
-                System.exit(0);
-            }
+            case 6 -> handleLogOut();
+            case 7 -> exitApp();
             default -> System.out.println("Invalid option.");
         }
     }
@@ -218,15 +191,8 @@ public class ConsoleApp {
             case 7 -> showShoppingCartMenu();
             case 8 -> handleAddReviewToGame();
             case 9 -> handleDeleteAccount();
-            case 10 -> {
-                accountController.logOut();
-                System.out.println("Returning to Main Menu...");
-                showMainMenu();
-            }
-            case 11 -> {
-                System.out.println("Exiting...");
-                System.exit(0);
-            }
+            case 10 -> handleLogOut();
+            case 11 -> exitApp();
             default -> System.out.println("Invalid option.");
         }
     }
@@ -267,91 +233,6 @@ public class ConsoleApp {
     }
 
     /**
-     * Allows customers to add a review to a game they own.
-     */
-
-    private void handleAddReviewToGame() {
-        System.out.print("Enter the name of the game to review: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
-
-        if (game == null) {
-            System.out.println("Game not found.");
-            return;
-        }
-
-        System.out.print("Enter your review: ");
-        String reviewText = scanner.nextLine();
-
-        boolean success = customerController.addReviewToGame(game, reviewText);
-        if (success) {
-            System.out.println("Review added successfully!");
-        } else {
-            System.out.println("Could not add review. Make sure you own the game.");
-        }
-    }
-
-    /**
-     * Allows customers to view games they own in their library.
-     */
-
-    private void handleViewLibrary() {
-        List<Game> libraryGames = customerController.getGamesLibrary();
-        if (libraryGames.isEmpty()) {
-            System.out.println("Your library is empty.");
-        } else {
-            System.out.println("Games in your library:");
-            for (Game game : libraryGames) {
-                System.out.println("- " + game.getGameName() + " ($" + game.getDiscountedPrice() + ")");
-            }
-        }
-    }
-
-    /**
-     * Displays the current wallet balance for the logged-in customer.
-     */
-
-    private void handleViewWalletBalance() {
-        float balance = customerController.getWalletBalance();
-        System.out.println("Current funds: " + balance);
-    }
-
-    /**
-     * Allows customers to add funds to their wallet using a specified payment method.
-     */
-
-    private void handleAddFundsToWallet() {
-        System.out.print("Write the amount you want to add to your wallet: ");
-        float amount = scanner.nextFloat();
-        scanner.nextLine();
-
-        System.out.print("Choose the PaymentMethod (ex: Visa, PayPal, ApplePay): ");
-        String paymentType = scanner.nextLine();
-
-        PaymentMethod paymentMethod = new PaymentMethod(1, paymentType);
-
-        if (customerController.addFundsToWallet(amount, paymentMethod)) {
-            System.out.println("Funds have been successfully added to your wallet.");
-        } else {
-            System.out.println("Funds could not be added.");
-        }
-    }
-
-    /**
-     * Allows Admin to apply a discount to a specified game.
-     */
-
-    private void handleApplyDiscountToGame() {
-        System.out.print("Enter the game ID: ");
-        int gameId = scanner.nextInt();
-        System.out.print("Enter discount percentage: ");
-        float discountPercentage = scanner.nextFloat();
-        scanner.nextLine();
-
-        adminController.applyDiscountToGame(gameId, discountPercentage);
-    }
-
-    /**
      * Handles user sign-up, allowing new users to create an account.
      */
 
@@ -375,34 +256,25 @@ public class ConsoleApp {
      */
 
     private void handleLogIn() {
-        System.out.print("Email: ");
+        System.out.print("Enter email: ");
         String email = scanner.nextLine();
-        System.out.print("Password: ");
+        System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
-        if (accountController.logIn(email, password)) {
-            System.out.println("Login successful!");
-            String role = accountController.getLoggedInUser().getRole();
-            if (role.equals("Admin")) {
-                while (accountController.getLoggedInUser() != null) {
-                    showAdminMenu();
-                }
-            } else if (role.equals("Developer")) {
-                while (accountController.getLoggedInUser() != null) {
-                    showDeveloperMenu();
-                }
+        String loginResult = accountController.logIn(email, password);
 
-            } else if (role.equals("Customer")) {
-                Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
-                customerController.setCustomer(loggedInCustomer);
-                while(accountController.getLoggedInUser() != null)
-                    showCustomerMenu();
-            }
-            else {
-                System.out.println("Unknown role.");
-            }
-        } else {
+        if (loginResult == null) {
             System.out.println("Invalid email or password.");
+            return;
+        }
+
+        System.out.println("Login successful! Welcome, " + loginResult + "!");
+
+        switch (loginResult) {
+            case "Admin" -> showAdminMenu();
+            case "Developer" -> showDeveloperMenu();
+            case "Customer" -> showCustomerMenu();
+            default -> System.out.println("Unknown role. Returning to main menu.");
         }
     }
 
@@ -667,6 +539,106 @@ public class ConsoleApp {
             System.out.println("Insufficient funds. Please add funds to your wallet.");
         }
 
+    }
+
+    /**
+     * Allows customers to add a review to a game they own.
+     */
+
+    private void handleAddReviewToGame() {
+        System.out.print("Enter the name of the game to review: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
+
+        if (game == null) {
+            System.out.println("Game not found.");
+            return;
+        }
+
+        System.out.print("Enter your review: ");
+        String reviewText = scanner.nextLine();
+
+        boolean success = customerController.addReviewToGame(game, reviewText);
+        if (success) {
+            System.out.println("Review added successfully!");
+        } else {
+            System.out.println("Could not add review. Make sure you own the game.");
+        }
+    }
+
+    /**
+     * Allows customers to view games they own in their library.
+     */
+
+    private void handleViewLibrary() {
+        List<Game> libraryGames = customerController.getGamesLibrary();
+        if (libraryGames.isEmpty()) {
+            System.out.println("Your library is empty.");
+        } else {
+            System.out.println("Games in your library:");
+            for (Game game : libraryGames) {
+                System.out.println("- " + game.getGameName() + " ($" + game.getDiscountedPrice() + ")");
+            }
+        }
+    }
+
+    /**
+     * Displays the current wallet balance for the logged-in customer.
+     */
+
+    private void handleViewWalletBalance() {
+        float balance = customerController.getWalletBalance();
+        System.out.println("Current funds: " + balance);
+    }
+
+    /**
+     * Allows customers to add funds to their wallet using a specified payment method.
+     */
+
+    private void handleAddFundsToWallet() {
+        System.out.print("Write the amount you want to add to your wallet: ");
+        float amount = scanner.nextFloat();
+        scanner.nextLine();
+
+        System.out.print("Choose the PaymentMethod (ex: Visa, PayPal, ApplePay): ");
+        String paymentType = scanner.nextLine();
+
+        PaymentMethod paymentMethod = new PaymentMethod(1, paymentType);
+
+        if (customerController.addFundsToWallet(amount, paymentMethod)) {
+            System.out.println("Funds have been successfully added to your wallet.");
+        } else {
+            System.out.println("Funds could not be added.");
+        }
+    }
+
+    /**
+     * Allows Admin to apply a discount to a specified game.
+     */
+
+    private void handleApplyDiscountToGame() {
+        System.out.print("Enter the game ID: ");
+        int gameId = scanner.nextInt();
+        System.out.print("Enter discount percentage: ");
+        float discountPercentage = scanner.nextFloat();
+        scanner.nextLine();
+
+        adminController.applyDiscountToGame(gameId, discountPercentage);
+    }
+
+    private void handleLogOut() {
+        boolean success = accountController.logOut();
+
+        if (success) {
+            System.out.println("Logged out successfully. Returning to Main Menu.");
+        } else {
+            System.out.println("No user is logged in to log out.");
+        }
+    }
+
+    private void exitApp() {
+        System.out.println("Exiting the application...");
+        System.exit(0);
     }
 
     public static void main(String[] args) {
