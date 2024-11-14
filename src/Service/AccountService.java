@@ -33,7 +33,6 @@ public class AccountService {
 
     public boolean signUp(String username, String email, String password) {
         if (isEmailUsed(email)) {
-            System.out.println("Email is already used!");
             return false;
         }
 
@@ -55,7 +54,6 @@ public class AccountService {
         }
 
         userRepository.create(newUser);
-        System.out.println("User created successfully!");
         return true;
     }
 
@@ -66,30 +64,28 @@ public class AccountService {
      * @return true if login is successful, false otherwise.
      */
 
-    public boolean logIn(String email, String password) {
-        for (User u : userRepository.getAll()) {
-            if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
-                loggedInUser = u;
-                System.out.println("Successful authentication for user: " + loggedInUser.getUsername());
-                return true;
+    public String logIn(String email, String password) {
+        for (User user : userRepository.getAll()) {
+            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
+                loggedInUser = user;
+                return user.getRole();
             }
         }
-        System.out.println("Wrong email or password!");
-        return false;
+        return null;
     }
 
     /**
      * Logs out the currently logged-in user.
      */
 
-    public void logOut() {
+    public boolean logOut() {
         if (loggedInUser != null) {
-            System.out.println("Successful log out for user: " + loggedInUser.getUsername());
             loggedInUser = null;
-        } else {
-            System.out.println("No logged in user found!");
+            return true;
         }
+        return false;
     }
+
 
     /**
      * Checks if a given email is already in use by an existing user.
@@ -130,7 +126,6 @@ public class AccountService {
     public boolean deleteAccount() {
         if (loggedInUser != null) {
             userRepository.delete(loggedInUser.getId());
-            System.out.println("Account deleted successfully for user: " + loggedInUser.getUsername());
             loggedInUser = null;
             return true;
         } else {
@@ -156,14 +151,11 @@ public class AccountService {
                 break;
             }
         }
-
         if (userToDelete == null) {
-            System.out.println("A user with given email does not exist.");
             return false;
         }
 
         userRepository.delete(userToDelete.getId());
-        System.out.println("User " + userToDelete.getUsername() + " was successfully deleted.");
         return true;
     }
 
