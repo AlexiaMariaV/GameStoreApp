@@ -232,6 +232,8 @@ public class ConsoleApp {
         }
     }
 
+    //METHODS FOR ALL USERS
+
     /**
      * Handles user sign-up, allowing new users to create an account.
      */
@@ -256,91 +258,35 @@ public class ConsoleApp {
      */
 
     private void handleLogIn() {
-        System.out.print("Enter email: ");
+        System.out.print("Email: ");
         String email = scanner.nextLine();
-        System.out.print("Enter password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        String loginResult = accountController.logIn(email, password);
+        if (accountController.logIn(email, password)) {
+            System.out.println("Login successful!");
+            String role = accountController.getLoggedInUser().getRole();
+            if (role.equals("Admin")) {
+                while (accountController.getLoggedInUser() != null) {
+                    showAdminMenu();
+                }
+            } else if (role.equals("Developer")) {
+                while (accountController.getLoggedInUser() != null) {
+                    showDeveloperMenu();
+                }
 
-        if (loginResult == null) {
-            System.out.println("Invalid email or password.");
-            return;
-        }
-
-        System.out.println("Login successful! Welcome, " + loginResult + "!");
-
-        switch (loginResult) {
-            case "Admin" -> showAdminMenu();
-            case "Developer" -> showDeveloperMenu();
-            case "Customer" -> showCustomerMenu();
-            default -> System.out.println("Unknown role. Returning to main menu.");
-        }
-    }
-
-    /**
-     * Handles account deletion for the currently logged-in user.
-     */
-
-    private void handleDeleteAccount() {
-        System.out.print("Are you sure you want to delete your account? (yes/no): ");
-        String confirmation = scanner.nextLine().toLowerCase();
-
-        if ("yes".equals(confirmation)) {
-            if (accountController.deleteAccount()) {
-                System.out.println("Your account has been deleted.");
-            } else {
-                System.out.println("Account deletion failed. No user is logged in.");
+            } else if (role.equals("Customer")) {
+                Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
+                customerController.setCustomer(loggedInCustomer);
+                while(accountController.getLoggedInUser() != null)
+                    showCustomerMenu();
+            }
+            else {
+                System.out.println("Unknown role.");
             }
         } else {
-            System.out.println("Account deletion canceled.");
+            System.out.println("Invalid email or password.");
         }
-    }
-
-    /**
-     * Allows Admin to delete any account by specifying the email.
-     */
-
-    private void handleDeleteAnyAccount() {
-
-        System.out.print("Please enter the email of the user whose account you would like to delete: ");
-        String email = scanner.nextLine();
-
-        if (accountController.deleteAnyAccount(email)) {
-            System.out.println("The account has been deleted.");
-        } else {
-            System.out.println("The account could not be deleted. Please check the email.");
-        }
-
-    }
-
-    /**
-     * Allows Developer to publish a new game to the platform.
-     */
-
-    private void handlePublishGame(){
-        User loggedUser = accountController.getLoggedInUser();
-        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
-            System.out.println("You don't have permission to publish games.");
-            return;
-        }
-
-        System.out.print("Game name: ");
-        String gameName = scanner.nextLine();
-        System.out.print("Game description: ");
-        String gameDescription = scanner.nextLine();
-        System.out.print("Game genre (ex: ACTION, ADVENTURE): ");
-        String genreInput = scanner.nextLine();
-        GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
-        System.out.print("Price: ");
-        float price = scanner.nextFloat();
-        scanner.nextLine();
-
-        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
-
-        Developer developer = (Developer) loggedUser;
-        developerController.setDeveloper(developer);
-        developerController.publishGame(game);
     }
 
     /**
@@ -377,6 +323,44 @@ public class ConsoleApp {
     }
 
     /**
+     * Handles account deletion for the currently logged-in user.
+     */
+
+    private void handleDeleteAccount() {
+        System.out.print("Are you sure you want to delete your account? (yes/no): ");
+        String confirmation = scanner.nextLine().toLowerCase();
+
+        if ("yes".equals(confirmation)) {
+            if (accountController.deleteAccount()) {
+                System.out.println("Your account has been deleted.");
+            } else {
+                System.out.println("Account deletion failed. No user is logged in.");
+            }
+        } else {
+            System.out.println("Account deletion canceled.");
+        }
+    }
+
+    private void handleLogOut() {
+        boolean success = accountController.logOut();
+
+        if (success) {
+            System.out.println("Logged out successfully. Returning to Main Menu.");
+        } else {
+            System.out.println("No user is logged in to log out.");
+        }
+    }
+
+    private void exitApp() {
+        System.out.println("Exiting the application...");
+        System.exit(0);
+    }
+
+
+
+    //ADMIN ONLY METHODS
+
+    /**
      * Allows Admin to delete a specific game by its ID.
      */
 
@@ -391,6 +375,74 @@ public class ConsoleApp {
         scanner.nextLine();
 
         adminController.deleteGame(gameId);
+        System.out.println("Game with ID " + gameId + " has been successfully deleted.");
+    }
+
+    /**
+     * Allows Admin to delete any account by specifying the email.
+     */
+
+    private void handleDeleteAnyAccount() {
+
+        System.out.print("Please enter the email of the user whose account you would like to delete: ");
+        String email = scanner.nextLine();
+
+        if (accountController.deleteAnyAccount(email)) {
+            System.out.println("The account has been deleted.");
+        } else {
+            System.out.println("The account could not be deleted. Please check the email.");
+        }
+
+    }
+
+    /**
+     * Allows Admin to apply a discount to a specified game.
+     */
+
+    private void handleApplyDiscountToGame() {
+        System.out.print("Enter the game ID: ");
+        int gameId = scanner.nextInt();
+        System.out.print("Enter discount percentage: ");
+        float discountPercentage = scanner.nextFloat();
+        scanner.nextLine();
+
+        adminController.applyDiscountToGame(gameId, discountPercentage);
+    }
+
+
+
+
+
+    //DEVELOPER ONLY METHODS
+
+    /**
+     * Allows Developer to publish a new game to the platform.
+     */
+
+    private void handlePublishGame(){
+        User loggedUser = accountController.getLoggedInUser();
+        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
+            System.out.println("You don't have permission to publish games.");
+            return;
+        }
+
+        System.out.print("Game name: ");
+        String gameName = scanner.nextLine();
+        System.out.print("Game description: ");
+        String gameDescription = scanner.nextLine();
+        System.out.print("Game genre (ex: ACTION, ADVENTURE): ");
+        String genreInput = scanner.nextLine();
+        GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
+        System.out.print("Price: ");
+        float price = scanner.nextFloat();
+        scanner.nextLine();
+
+        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
+
+        Developer developer = (Developer) loggedUser;
+        developerController.setDeveloper(developer);
+        developerController.publishGame(game);
+        System.out.println("Game published successfully: " + game.getGameName());
     }
 
     /**
@@ -422,6 +474,9 @@ public class ConsoleApp {
 
         developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
     }
+
+
+    //CUSTOMER ONLY METHODS
 
     /**
      * Allows customers to search for a game by its name.
@@ -542,31 +597,6 @@ public class ConsoleApp {
     }
 
     /**
-     * Allows customers to add a review to a game they own.
-     */
-
-    private void handleAddReviewToGame() {
-        System.out.print("Enter the name of the game to review: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
-
-        if (game == null) {
-            System.out.println("Game not found.");
-            return;
-        }
-
-        System.out.print("Enter your review: ");
-        String reviewText = scanner.nextLine();
-
-        boolean success = customerController.addReviewToGame(game, reviewText);
-        if (success) {
-            System.out.println("Review added successfully!");
-        } else {
-            System.out.println("Could not add review. Make sure you own the game.");
-        }
-    }
-
-    /**
      * Allows customers to view games they own in their library.
      */
 
@@ -613,32 +643,28 @@ public class ConsoleApp {
     }
 
     /**
-     * Allows Admin to apply a discount to a specified game.
+     * Allows customers to add a review to a game they own.
      */
 
-    private void handleApplyDiscountToGame() {
-        System.out.print("Enter the game ID: ");
-        int gameId = scanner.nextInt();
-        System.out.print("Enter discount percentage: ");
-        float discountPercentage = scanner.nextFloat();
-        scanner.nextLine();
+    private void handleAddReviewToGame() {
+        System.out.print("Enter the name of the game to review: ");
+        String gameName = scanner.nextLine();
+        Game game = customerController.searchGameByName(gameName);
 
-        adminController.applyDiscountToGame(gameId, discountPercentage);
-    }
-
-    private void handleLogOut() {
-        boolean success = accountController.logOut();
-
-        if (success) {
-            System.out.println("Logged out successfully. Returning to Main Menu.");
-        } else {
-            System.out.println("No user is logged in to log out.");
+        if (game == null) {
+            System.out.println("Game not found.");
+            return;
         }
-    }
 
-    private void exitApp() {
-        System.out.println("Exiting the application...");
-        System.exit(0);
+        System.out.print("Enter your review: ");
+        String reviewText = scanner.nextLine();
+
+        boolean success = customerController.addReviewToGame(game, reviewText);
+        if (success) {
+            System.out.println("Review added successfully!");
+        } else {
+            System.out.println("Could not add review. Make sure you own the game.");
+        }
     }
 
     public static void main(String[] args) {

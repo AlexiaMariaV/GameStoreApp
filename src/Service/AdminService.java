@@ -32,7 +32,6 @@ public class AdminService {
             return;
         }
         gameRepository.delete(gameId);
-        System.out.println("Game with ID " + gameId + " has been successfully deleted.");
     }
 
     /**
