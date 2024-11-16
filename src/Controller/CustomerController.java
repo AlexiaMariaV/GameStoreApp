@@ -51,6 +51,14 @@ public class CustomerController {
         return customerService.searchGameByName(gameName);
     }
 
+
+    public List<Game> sortGamesByNameAscending() {
+        return customerService.sortGamesByNameAscending();
+    }
+    public List<Game> sortGamesByPriceDescending() {
+        return customerService.sortGamesByPriceDescending();
+    }
+
     /**
      * Filters games by a specified genre.
      * @param genre The genre to filter games by.
@@ -60,6 +68,11 @@ public class CustomerController {
     public List<Game> filterGamesByGenre(String genre) {
         return customerService.filterByGenre(genre);
     }
+
+    public List<Game> filterGamesByPriceRange(float minPrice, float maxPrice) {
+        return customerService.filterGamesByPriceRange(minPrice, maxPrice);
+    }
+
 
     /**
      * Adds funds to the customer's wallet using a specified payment method.
