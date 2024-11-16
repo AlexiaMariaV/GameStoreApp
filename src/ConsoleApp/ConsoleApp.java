@@ -168,7 +168,8 @@ public class ConsoleApp {
         System.out.println("\nCustomer Menu:");
         System.out.println("1. List All Games");
         System.out.println("2. Search Game by Name");
-        System.out.println("3. Filter Games by Genre");
+        System.out.println("3. Sort/Filter Games by");
+        //System.out.println("3. Filter Games by Genre");
         System.out.println("4. Add Funds to your wallet");
         System.out.println("5. View Wallet Balance");
         System.out.println("6. View Games Library");
@@ -184,7 +185,7 @@ public class ConsoleApp {
         switch (option) {
             case 1 -> handleListAllGames();
             case 2 -> handleSearchGameByName();
-            case 3 -> handleFilterByGenre();
+            case 3 -> showSortFilterMenu();
             case 4 -> handleAddFundsToWallet();
             case 5 -> handleViewWalletBalance();
             case 6 -> handleViewLibrary();
@@ -231,6 +232,35 @@ public class ConsoleApp {
             }
         }
     }
+
+    private void showSortFilterMenu() {
+        while (true) {
+            System.out.println("\nSort/Filter Games Menu:");
+            System.out.println("1. Sort Games by Name (Ascending)");
+            System.out.println("2. Sort Games by Price (Descending)");
+            System.out.println("3. Filter Games by Genre");
+            System.out.println("4. Filter Games by Price Range");
+            System.out.println("5. Return to Customer Menu");
+            System.out.print("Select option: ");
+
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1 -> handleSortGamesByNameAscending();
+                case 2 -> handleSortGamesByPriceDescending();
+                case 3 -> handleFilterByGenre();
+                case 4 -> handleFilterGamesByPriceRange();
+                case 5 -> {
+                    System.out.println("Returning to Customer Menu...");
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+
 
     //METHODS FOR ALL USERS
 
@@ -497,6 +527,29 @@ public class ConsoleApp {
      * Allows customers to filter games by genre and displays matching results.
      */
 
+    private void handleSortGamesByNameAscending() {
+        List<Game> sortedGames = customerController.sortGamesByNameAscending();
+
+        if (sortedGames.isEmpty()) {
+            System.out.println("No games available.");
+        } else {
+            System.out.println("Games sorted by name (ascending):");
+            for (Game game : sortedGames) {
+                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            }
+        }
+    }
+
+    private void handleSortGamesByPriceDescending() {
+        List<Game> sortedGames = customerController.sortGamesByPriceDescending();
+
+        System.out.println("Games sorted by price (descending):");
+        for (Game game : sortedGames) {
+            System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+        }
+    }
+
+
     private void handleFilterByGenre() {
         System.out.print("Enter genre: ");
         String genre = scanner.nextLine();
@@ -511,6 +564,26 @@ public class ConsoleApp {
             }
         }
     }
+
+    private void handleFilterGamesByPriceRange() {
+        System.out.print("Enter minimum price: ");
+        float minPrice = scanner.nextFloat();
+        System.out.print("Enter maximum price: ");
+        float maxPrice = scanner.nextFloat();
+        scanner.nextLine();
+
+        List<Game> filteredGames = customerController.filterGamesByPriceRange(minPrice, maxPrice);
+
+        if (filteredGames.isEmpty()) {
+            System.out.println("No games found in the specified price range.");
+        } else {
+            System.out.println("Games in the price range $" + minPrice + " - $" + maxPrice + ":");
+            for (Game game : filteredGames) {
+                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            }
+        }
+    }
+
 
     /**
      * Displays the contents of the shopping cart.

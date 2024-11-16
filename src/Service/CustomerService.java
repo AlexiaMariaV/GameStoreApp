@@ -8,6 +8,7 @@ import Repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Service class for managing customer-specific functions, such as browsing games, managing wallet funds, and leaving reviews.
@@ -62,6 +63,40 @@ public class CustomerService {
         return null;
     }
 
+
+
+
+
+    public List<Game> sortGamesByNameAscending() {
+        List<Game> games = new ArrayList<>(gameRepository.getAll());
+
+        for (int i = 0; i < games.size() - 1; i++) {
+            for (int j = 0; j < games.size() - i - 1; j++) {
+                if (games.get(j).getGameName().compareToIgnoreCase(games.get(j + 1).getGameName()) > 0) {
+                    Collections.swap(games, j, j + 1);
+                }
+            }
+        }
+        return games;
+    }
+
+    public List<Game> sortGamesByPriceDescending() {
+        List<Game> allGames = new ArrayList<>(gameRepository.getAll());
+
+        // Manual Sorting by Price (Descending) using Bubble Sort
+        for (int i = 0; i < allGames.size() - 1; i++) {
+            for (int j = 0; j < allGames.size() - i - 1; j++) {
+                if (allGames.get(j).getPrice() < allGames.get(j + 1).getPrice()) {
+                    // Swap
+                    Game temp = allGames.get(j);
+                    allGames.set(j, allGames.get(j + 1));
+                    allGames.set(j + 1, temp);
+                }
+            }
+        }
+        return allGames;
+    }
+
     /**
      * Filters games by a specified genre.
      * @param genre The genre to filter games by.
@@ -76,6 +111,18 @@ public class CustomerService {
             }
         }
         return gamesByGenre;
+    }
+
+    public List<Game> filterGamesByPriceRange(float minPrice, float maxPrice) {
+        List<Game> gamesByPriceRange = new ArrayList<>();
+
+        for (Game game : gameRepository.getAll()) {
+            if (game.getPrice() >= minPrice && game.getPrice() <= maxPrice) {
+                gamesByPriceRange.add(game);
+            }
+        }
+
+        return gamesByPriceRange;
     }
 
     /**
