@@ -64,14 +64,16 @@ public class AccountService {
      * @return true if login is successful, false otherwise.
      */
 
-    public String logIn(String email, String password) {
-        for (User user : userRepository.getAll()) {
-            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
-                loggedInUser = user;
-                return user.getRole();
+    public boolean logIn(String email, String password) {
+        for (User u : userRepository.getAll()) {
+            if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                loggedInUser = u;
+                System.out.println("Successful authentication for user: " + loggedInUser.getUsername());
+                return true;
             }
         }
-        return null;
+        System.out.println("Wrong email or password!");
+        return false;
     }
 
     /**

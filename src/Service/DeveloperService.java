@@ -57,7 +57,6 @@ public class DeveloperService {
         game.setGameId(allGames.size() + 1);
         gameRepository.create(game);
         loggedInDeveloper.addPublishedGame(game);
-        System.out.println("Game published successfully: " + game.getGameName());
         return true;
     }
 
