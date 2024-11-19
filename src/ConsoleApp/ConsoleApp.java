@@ -492,7 +492,7 @@ public class ConsoleApp {
         String newName = scanner.nextLine();
         System.out.print("New Game description: ");
         String newDescription = scanner.nextLine();
-        System.out.println("New Game genre: ");
+        System.out.print("New Game genre: ");
         String newGenre = scanner.nextLine();
         System.out.print("New Price: ");
         float newPrice = scanner.nextFloat();
@@ -662,6 +662,7 @@ public class ConsoleApp {
             }
 
             shoppingCartController.clearCart();
+            System.out.println("Cart has been cleared.");
             System.out.println("Checkout successful! Thank you for your purchase.");
         } else {
             System.out.println("Insufficient funds. Please add funds to your wallet.");

@@ -33,7 +33,7 @@ public class Customer extends User {
         super(userId, username, email, password, role);
         this.fundWallet = fundWallet;
         this.gamesLibrary = new ArrayList<>(gamesLibrary);
-        this.reviews = reviews;
+        this.reviews = new ArrayList<>(reviews);
         this.shoppingCart = shoppingCart;
     }
 
@@ -58,7 +58,7 @@ public class Customer extends User {
     }
 
     public void setReviews(List<Review> review) {
-        this.reviews = reviews;
+        new ArrayList<>(reviews);
     }
 
     public ShoppingCart getShoppingCart() {

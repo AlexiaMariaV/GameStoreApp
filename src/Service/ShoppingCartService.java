@@ -40,11 +40,7 @@ public class ShoppingCartService {
      */
 
     public void removeGameFromCart(Game game) {
-        if (shoppingCart.getListOfGames().remove(game)) {
-            System.out.println("Game removed from cart: " + game.getGameName());
-        } else {
-            System.out.println("Game not found in the cart.");
-        }
+        shoppingCart.getListOfGames().remove(game);
     }
 
     /**
@@ -66,7 +62,6 @@ public class ShoppingCartService {
 
     public void clearCart() {
         shoppingCart.getListOfGames().clear();
-        System.out.println("Cart has been cleared.");
     }
 
     /**
