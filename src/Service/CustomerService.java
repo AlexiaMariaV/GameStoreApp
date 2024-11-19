@@ -208,30 +208,15 @@ public class CustomerService {
 
     public boolean addReviewToGame(Game game, String reviewText) {
         if (loggedInCustomer == null) {
-            System.out.println("No user is logged in.");
+            System.out.println("No user logged in.");
             return false;
         }
 
         if (loggedInCustomer.getGamesLibrary().contains(game)) {
             Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
+            game.getReviews().add(review);
+            loggedInCustomer.getReviews().add(review);
 
-            List<Review> gameReviews = game.getReviews();
-            if (gameReviews instanceof ArrayList) {
-                gameReviews.add(review);
-            } else {
-                gameReviews = new ArrayList<>(gameReviews);
-                gameReviews.add(review);
-                game.setReviews(gameReviews);
-            }
-
-            List<Review> customerReviews = loggedInCustomer.getReviews();
-            if (customerReviews instanceof ArrayList) {
-                customerReviews.add(review);
-            } else {
-                customerReviews = new ArrayList<>(customerReviews);
-                customerReviews.add(review);
-                loggedInCustomer.setReviews(customerReviews);
-            }
             return true;
         } else {
             return false;

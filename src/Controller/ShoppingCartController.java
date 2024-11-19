@@ -54,7 +54,6 @@ public class ShoppingCartController {
 
     public float checkout() {
         float total = shoppingCartService.calculateTotalPrice();
-        System.out.println("Total price: $" + total);
         return total;
     }
 
