@@ -151,6 +151,13 @@ public class CustomerService {
             System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
             return true;
         }
+
+        if (amount < 0) {
+            float currentFunds = loggedInCustomer.getFundWallet();
+            loggedInCustomer.setFundWallet(currentFunds + amount);
+            userRepository.update(loggedInCustomer);
+            return true;
+        }
         return false;
     }
 
