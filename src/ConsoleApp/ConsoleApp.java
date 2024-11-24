@@ -2,6 +2,7 @@ package ConsoleApp;
 
 import Controller.*;
 import Model.*;
+import Repository.IRepository;
 import Repository.InMemoryRepository;
 import Repository.FileRepository;
 import Service.*;
@@ -37,8 +38,8 @@ public class ConsoleApp {
         // FileRepository (ensure the file paths are correctly set)
 //        FileRepository<Game> repository = new FileRepository<>("games.dat");
 //        AccountService accountService = new AccountService(new FileRepository<>("users.dat"));
-        FileRepository<Game> gameRepository = FileRepository.getInstance(Game.class, "games.dat");
-        FileRepository<User> userRepository = FileRepository.getInstance(User.class, "user.dat");
+        IRepository<Game> gameRepository = FileRepository.getInstance(Game.class, "games.dat");
+        IRepository<User> userRepository = FileRepository.getInstance(User.class, "user.dat");
         AccountService accountService = new AccountService(userRepository);
         GameService gameService = new GameService(gameRepository);
         AdminService adminService = new AdminService(gameRepository);
@@ -671,10 +672,6 @@ public class ConsoleApp {
             shoppingCartController.clearCart();
             System.out.println("Cart has been cleared.");
             System.out.println("Checkout successful! Thank you for your purchase.");
-//            Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
-//            if (loggedInCustomer != null) {
-//                userRepository.update(loggedInCustomer);
-//            }
         } else {
             System.out.println("Insufficient funds. Please add funds to your wallet.");
         }
