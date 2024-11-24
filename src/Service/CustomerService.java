@@ -1,9 +1,6 @@
 package Service;
 
-import Model.Customer;
-import Model.Game;
-import Model.PaymentMethod;
-import Model.Review;
+import Model.*;
 import Repository.IRepository;
 
 import java.util.ArrayList;
@@ -16,6 +13,7 @@ import java.util.Collections;
 
 public class CustomerService {
     private final IRepository<Game> gameRepository;
+    private final IRepository<User> userRepository;
     private Customer loggedInCustomer;
 
     /**
@@ -24,8 +22,9 @@ public class CustomerService {
      * @param loggedInCustomer The currently logged-in customer.
      */
 
-    public CustomerService(IRepository<Game> gameRepository, Customer loggedInCustomer) {
+    public CustomerService(IRepository<Game> gameRepository, IRepository<User> userRepository, Customer loggedInCustomer) {
         this.gameRepository = gameRepository;
+        this.userRepository = userRepository;
         this.loggedInCustomer = loggedInCustomer;
     }
 
@@ -83,11 +82,9 @@ public class CustomerService {
     public List<Game> sortGamesByPriceDescending() {
         List<Game> allGames = new ArrayList<>(gameRepository.getAll());
 
-        // Manual Sorting by Price (Descending) using Bubble Sort
         for (int i = 0; i < allGames.size() - 1; i++) {
             for (int j = 0; j < allGames.size() - i - 1; j++) {
                 if (allGames.get(j).getPrice() < allGames.get(j + 1).getPrice()) {
-                    // Swap
                     Game temp = allGames.get(j);
                     allGames.set(j, allGames.get(j + 1));
                     allGames.set(j + 1, temp);
@@ -148,14 +145,13 @@ public class CustomerService {
         }
 
         if (amount > 0) {
+            float currentFunds = loggedInCustomer.getFundWallet();
+            loggedInCustomer.setFundWallet(currentFunds + amount);
+            userRepository.update(loggedInCustomer);
             System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
+            return true;
         }
-
-        float currentFunds = loggedInCustomer.getFundWallet();
-        loggedInCustomer.setFundWallet(currentFunds + amount);
-        System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
-        System.out.println("Current amount: " + loggedInCustomer.getFundWallet());
-        return true;
+        return false;
     }
 
     /**
@@ -178,12 +174,19 @@ public class CustomerService {
 
     public void addGameToLibrary(Game game) {
         if (loggedInCustomer != null) {
-            List<Game> gamesLibrary = loggedInCustomer.getGamesLibrary();
-            if (gamesLibrary == null) {
-                gamesLibrary = new ArrayList<>();
-                loggedInCustomer.setGamesLibrary(gamesLibrary);
+            boolean alreadyInLibrary = false;
+
+            for (Game g : loggedInCustomer.getGamesLibrary()) {
+                if (g.getId().equals(game.getId())) {
+                    alreadyInLibrary = true;
+                    break;
+                }
             }
-            gamesLibrary.add(game);
+
+            if (!alreadyInLibrary) {
+                loggedInCustomer.getGamesLibrary().add(game);
+                userRepository.update(loggedInCustomer);
+            }
         }
     }
 
@@ -207,18 +210,45 @@ public class CustomerService {
      */
 
     public boolean addReviewToGame(Game game, String reviewText) {
+//        if (loggedInCustomer == null) {
+//            System.out.println("No user logged in.");
+//            return false;
+//        }
+//
+//        if (loggedInCustomer.getGamesLibrary().contains(game)) {
+//            Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
+//            game.getReviews().add(review);
+//            loggedInCustomer.getReviews().add(review);
+//
+//            return true;
+//        } else {
+//            return false;
+//        }
         if (loggedInCustomer == null) {
             System.out.println("No user logged in.");
             return false;
         }
 
-        if (loggedInCustomer.getGamesLibrary().contains(game)) {
+        boolean ownsGame = false;
+
+        for (Game g : loggedInCustomer.getGamesLibrary()) {
+            if (g.getId().equals(game.getId())) {
+                ownsGame = true;
+                break;
+            }
+        }
+
+        if (ownsGame) {
             Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
             game.getReviews().add(review);
             loggedInCustomer.getReviews().add(review);
 
+            gameRepository.update(game);
+            userRepository.update(loggedInCustomer);
+
             return true;
         } else {
+            System.out.println("You can only review games that you own.");
             return false;
         }
     }

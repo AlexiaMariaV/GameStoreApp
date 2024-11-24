@@ -1,6 +1,7 @@
 package Model;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * Each game has attributes such as name, genre, price, and reviews.
  */
 
-public class Game implements HasId {
+public class Game implements HasId, Serializable {
 
     private Integer gameId;
     private String gameName;

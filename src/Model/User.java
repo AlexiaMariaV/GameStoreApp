@@ -1,11 +1,14 @@
 package Model;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Abstract class representing a user in the application.
  * Users can have different roles, such as Admin, Developer, or Customer.
  */
 
-public abstract class User implements HasId {
+public abstract class User implements HasId, Serializable {
     protected String username;
     protected Integer userId;
     protected String password;

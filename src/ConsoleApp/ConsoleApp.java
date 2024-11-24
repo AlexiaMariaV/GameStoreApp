@@ -3,6 +3,7 @@ package ConsoleApp;
 import Controller.*;
 import Model.*;
 import Repository.InMemoryRepository;
+import Repository.FileRepository;
 import Service.*;
 
 import java.util.ArrayList;
@@ -31,12 +32,18 @@ public class ConsoleApp {
 
 
     public ConsoleApp() {
-        InMemoryRepository<Game> repository = new InMemoryRepository<>();
-        AccountService accountService = new AccountService(new InMemoryRepository<>());
-        GameService gameService = new GameService(repository);
-        AdminService adminService = new AdminService(repository);
-        DeveloperService developerService = new DeveloperService(repository, null);
-        CustomerService customerService = new CustomerService(repository, null);
+//        InMemoryRepository<Game> repository = new InMemoryRepository<>();
+//        AccountService accountService = new AccountService(new InMemoryRepository<>());
+        // FileRepository (ensure the file paths are correctly set)
+//        FileRepository<Game> repository = new FileRepository<>("games.dat");
+//        AccountService accountService = new AccountService(new FileRepository<>("users.dat"));
+        FileRepository<Game> gameRepository = FileRepository.getInstance(Game.class, "games.dat");
+        FileRepository<User> userRepository = FileRepository.getInstance(User.class, "user.dat");
+        AccountService accountService = new AccountService(userRepository);
+        GameService gameService = new GameService(gameRepository);
+        AdminService adminService = new AdminService(gameRepository);
+        DeveloperService developerService = new DeveloperService(gameRepository, userRepository,null);
+        CustomerService customerService = new CustomerService(gameRepository, userRepository,null);
         ShoppingCart placeholderCart = new ShoppingCart(null, new ArrayList<>());
         Customer placeholderCustomer = new Customer(null, "placeholder", "placeholder@example.com", "password", "Customer",0.0f, new ArrayList<>(), new ArrayList<>(), placeholderCart );
         ShoppingCartService shoppingCartService = new ShoppingCartService(placeholderCustomer);
@@ -664,6 +671,10 @@ public class ConsoleApp {
             shoppingCartController.clearCart();
             System.out.println("Cart has been cleared.");
             System.out.println("Checkout successful! Thank you for your purchase.");
+//            Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
+//            if (loggedInCustomer != null) {
+//                userRepository.update(loggedInCustomer);
+//            }
         } else {
             System.out.println("Insufficient funds. Please add funds to your wallet.");
         }

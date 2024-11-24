@@ -2,6 +2,7 @@ package Service;
 
 import Model.Developer;
 import Model.Game;
+import Model.User;
 import Repository.IRepository;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class DeveloperService {
     private final IRepository<Game> gameRepository;
+    private final IRepository<User> userRepository;
     private Developer loggedInDeveloper;
 
     /**
@@ -20,8 +22,9 @@ public class DeveloperService {
      * @param loggedInDeveloper The currently logged-in developer.
      */
 
-    public DeveloperService(IRepository<Game> gameRepository, Developer loggedInDeveloper) {
+    public DeveloperService(IRepository<Game> gameRepository, IRepository<User> userRepository, Developer loggedInDeveloper) {
         this.gameRepository = gameRepository;
+        this.userRepository = userRepository;
         this.loggedInDeveloper = loggedInDeveloper;
     }
 
@@ -56,7 +59,9 @@ public class DeveloperService {
 
         game.setGameId(allGames.size() + 1);
         gameRepository.create(game);
-        loggedInDeveloper.addPublishedGame(game);
+//        loggedInDeveloper.addPublishedGame(game);
+        loggedInDeveloper.getPublishedGames().add(game);
+        userRepository.update(loggedInDeveloper);
         return true;
     }
 
@@ -72,14 +77,43 @@ public class DeveloperService {
 
     public boolean modifyGame(int gameId, String newName, String newDescription, String newGenre, float newPrice) {
 
+//        Game game = gameRepository.get(gameId);
+//        if (game != null && loggedInDeveloper.getPublishedGames().contains(game)) {
+//            game.setGameName(newName);
+//            game.setGameDescription(newDescription);
+//            game.setPrice(newPrice);
+//            //new
+//            gameRepository.update(game);
+//            System.out.println("Game has been actualised: " + game);
+//            return true;
+//        }
+//        System.out.println("You don't have permission to modify this game or game not found.");
+//        return false;
+
         Game game = gameRepository.get(gameId);
-        if (game != null && loggedInDeveloper.getPublishedGames().contains(game)) {
+
+        boolean ownsGame = false;
+
+        if (game != null) {
+            for (Game g : loggedInDeveloper.getPublishedGames()) {
+                if (g.getId().equals(gameId)) {
+                    ownsGame = true;
+                    break;
+                }
+            }
+        }
+
+        if (ownsGame) {
             game.setGameName(newName);
             game.setGameDescription(newDescription);
             game.setPrice(newPrice);
-            System.out.println("Game has been actualised: " + game);
+
+            gameRepository.update(game);
+
+            System.out.println("Game has been updated: " + game);
             return true;
         }
+
         System.out.println("You don't have permission to modify this game or game not found.");
         return false;
     }
