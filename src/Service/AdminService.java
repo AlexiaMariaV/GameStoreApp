@@ -50,6 +50,9 @@ public class AdminService {
         Discount discount = new Discount(gameId, discountPercentage);
         game.setDiscount(discount);
 
+        //new
+        gameRepository.update(game);
+
         float discountedPrice = game.getPrice() * (1 - discountPercentage / 100);
         System.out.println("Discount of " + discountPercentage + "% applied to game: " + game.getGameName());
         System.out.println("New discounted price: " + discountedPrice);

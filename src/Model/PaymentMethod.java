@@ -1,10 +1,12 @@
 package Model;
 
+import java.io.Serializable;
+
 /**
  * Represents a payment method used by a customer to add funds to their wallet.
  */
 
-public class PaymentMethod implements HasId{
+public class PaymentMethod implements HasId, Serializable {
     private Integer paymentId;
     private String paymentType;
 

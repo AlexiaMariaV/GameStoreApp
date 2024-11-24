@@ -1,12 +1,13 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Represents a shopping cart for a customer, containing a list of games they wish to purchase.
  */
 
-public class ShoppingCart {
+public class ShoppingCart implements Serializable {
     private List<Game> listOfGames;
     private Customer customer;
 

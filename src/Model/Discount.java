@@ -1,11 +1,13 @@
 package Model;
 
+import java.io.Serializable;
+
 /**
  * Represents a discount that can be applied to a game.
  * Discounts are represented as percentages.
  */
 
-public class Discount implements HasId{
+public class Discount implements HasId, Serializable {
     private Integer discountId;
     private float discountPercentage;
 

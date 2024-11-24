@@ -1,11 +1,13 @@
 package Model;
 
+import java.io.Serializable;
+
 /**
  * Represents a review for a game, created by a customer.
  * Each review includes the customer, the game reviewed, and the review text.
  */
 
-public class Review implements HasId{
+public class Review implements HasId, Serializable {
     private int reviewID;
     private String text;
     private Customer customer;
