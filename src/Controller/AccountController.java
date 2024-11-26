@@ -41,6 +41,7 @@ public class AccountController {
     public boolean logIn(String email, String password) {
         return accountService.logIn(email, password);
     }
+
     /**
      * Logs out the currently logged-in user.
      */

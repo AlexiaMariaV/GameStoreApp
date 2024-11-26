@@ -241,6 +241,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Displays the menu for sorting and filtering games.
+     */
+
     private void showSortFilterMenu() {
         while (true) {
             System.out.println("\nSort/Filter Games Menu:");
@@ -379,6 +383,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Logs out the currently logged-in user.
+     */
+
     private void handleLogOut() {
         boolean success = accountController.logOut();
 
@@ -388,6 +396,10 @@ public class ConsoleApp {
             System.out.println("No user is logged in to log out.");
         }
     }
+
+    /**
+     * Exits the application gracefully by printing a message and stopping the execution.
+     */
 
     private void exitApp() {
         System.out.println("Exiting the application...");
@@ -532,7 +544,7 @@ public class ConsoleApp {
     }
 
     /**
-     * Allows customers to filter games by genre and displays matching results.
+     * Sorts and displays games by name in ascending order.
      */
 
     private void handleSortGamesByNameAscending() {
@@ -548,6 +560,10 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Sorts and displays games by price in descending order.
+     */
+
     private void handleSortGamesByPriceDescending() {
         List<Game> sortedGames = customerController.sortGamesByPriceDescending();
 
@@ -557,6 +573,9 @@ public class ConsoleApp {
         }
     }
 
+    /**
+     * Filters and displays games by the specified genre.
+     */
 
     private void handleFilterByGenre() {
         System.out.print("Enter genre: ");
@@ -572,6 +591,10 @@ public class ConsoleApp {
             }
         }
     }
+
+    /**
+     * Filters and displays games within the specified price range.
+     */
 
     private void handleFilterGamesByPriceRange() {
         System.out.print("Enter minimum price: ");

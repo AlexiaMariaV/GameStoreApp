@@ -19,6 +19,7 @@ public class DeveloperService {
     /**
      * Constructs the DeveloperService with a game repository and logged-in developer.
      * @param gameRepository The repository for managing games.
+     * @param userRepository The repository for managing users.
      * @param loggedInDeveloper The currently logged-in developer.
      */
 
@@ -76,19 +77,6 @@ public class DeveloperService {
      */
 
     public boolean modifyGame(int gameId, String newName, String newDescription, String newGenre, float newPrice) {
-
-//        Game game = gameRepository.get(gameId);
-//        if (game != null && loggedInDeveloper.getPublishedGames().contains(game)) {
-//            game.setGameName(newName);
-//            game.setGameDescription(newDescription);
-//            game.setPrice(newPrice);
-//            //new
-//            gameRepository.update(game);
-//            System.out.println("Game has been actualised: " + game);
-//            return true;
-//        }
-//        System.out.println("You don't have permission to modify this game or game not found.");
-//        return false;
 
         Game game = gameRepository.get(gameId);
 

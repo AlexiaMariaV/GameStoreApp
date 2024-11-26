@@ -78,6 +78,7 @@ public class AccountService {
 
     /**
      * Logs out the currently logged-in user.
+     * @return true if the user was logged out successfully, false if no user was logged in.
      */
 
     public boolean logOut() {
