@@ -23,6 +23,7 @@ public class AdminService {
     /**
      * Deletes a game from the repository by its ID.
      * @param gameId The ID of the game to delete.
+     *               If the game does not exist, a message is displayed.
      */
 
     public void deleteGame(int gameId) {
@@ -38,6 +39,8 @@ public class AdminService {
      * Applies a discount to a specific game.
      * @param gameId The ID of the game to apply the discount to.
      * @param discountPercentage The discount percentage to apply.
+     *                           Updates the game repository with the discounted price.
+     *                           If the game does not exist, a message is displayed.
      */
 
     public void applyDiscountToGame(int gameId, float discountPercentage) {

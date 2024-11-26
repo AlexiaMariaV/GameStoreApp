@@ -19,6 +19,7 @@ public class CustomerService {
     /**
      * Constructs the CustomerService with a game repository and logged-in customer.
      * @param gameRepository The repository for managing games.
+     * @param userRepository The repository for managing users.
      * @param loggedInCustomer The currently logged-in customer.
      */
 
@@ -62,9 +63,10 @@ public class CustomerService {
         return null;
     }
 
-
-
-
+    /**
+     * Sorts all games in ascending order by their names.
+     * @return A list of games sorted by name in ascending order.
+     */
 
     public List<Game> sortGamesByNameAscending() {
         List<Game> games = new ArrayList<>(gameRepository.getAll());
@@ -78,6 +80,11 @@ public class CustomerService {
         }
         return games;
     }
+
+    /**
+     * Sorts all games in descending order by their prices.
+     * @return A list of games sorted by price in descending order.
+     */
 
     public List<Game> sortGamesByPriceDescending() {
         List<Game> allGames = new ArrayList<>(gameRepository.getAll());
@@ -109,6 +116,13 @@ public class CustomerService {
         }
         return gamesByGenre;
     }
+
+    /**
+     * Filters games based on a specified price range.
+     * @param minPrice The minimum price of the games to include in the result.
+     * @param maxPrice The maximum price of the games to include in the result.
+     * @return A list of games within the specified price range. If no games match, the list will be empty.
+     */
 
     public List<Game> filterGamesByPriceRange(float minPrice, float maxPrice) {
         List<Game> gamesByPriceRange = new ArrayList<>();
@@ -217,20 +231,6 @@ public class CustomerService {
      */
 
     public boolean addReviewToGame(Game game, String reviewText) {
-//        if (loggedInCustomer == null) {
-//            System.out.println("No user logged in.");
-//            return false;
-//        }
-//
-//        if (loggedInCustomer.getGamesLibrary().contains(game)) {
-//            Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
-//            game.getReviews().add(review);
-//            loggedInCustomer.getReviews().add(review);
-//
-//            return true;
-//        } else {
-//            return false;
-//        }
         if (loggedInCustomer == null) {
             System.out.println("No user logged in.");
             return false;

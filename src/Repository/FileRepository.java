@@ -20,6 +20,7 @@ public class FileRepository<T extends HasId> implements IRepository<T> {
      * Constructs a new FileRepository with the specified file path.
      *
      * @param filePath The path to the file where data will be stored.
+     *                 If the file does not exist, it will be created.
      */
     public FileRepository(String filePath) {
         this.filePath = filePath;
@@ -101,6 +102,16 @@ public class FileRepository<T extends HasId> implements IRepository<T> {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Returns the singleton instance of {@link FileRepository} for the specified type.
+     * This method ensures that only one instance of {@link FileRepository} exists for each type of object.
+     *
+     * @param <T> The type of the objects in the repository.
+     * @param type The class type of the objects in the repository.
+     * @param filePath The file path where the data will be stored.
+     * @return The instance of the repository for the specified type.
+     */
 
     @SuppressWarnings("unchecked")
     public static synchronized <T extends HasId> FileRepository<T> getInstance(Class<T> type, String filePath) {

@@ -51,10 +51,20 @@ public class CustomerController {
         return customerService.searchGameByName(gameName);
     }
 
+    /**
+     * Sorts the games by name in ascending order.
+     * @return A list of games sorted by name in ascending order.
+     */
 
     public List<Game> sortGamesByNameAscending() {
         return customerService.sortGamesByNameAscending();
     }
+
+    /**
+     * Sorts the games by price in descending order.
+     * @return A list of games sorted by price in descending order.
+     */
+
     public List<Game> sortGamesByPriceDescending() {
         return customerService.sortGamesByPriceDescending();
     }
@@ -68,6 +78,13 @@ public class CustomerController {
     public List<Game> filterGamesByGenre(String genre) {
         return customerService.filterByGenre(genre);
     }
+
+    /**
+     * Filters games by a price range.
+     * @param minPrice The minimum price of the games.
+     * @param maxPrice The maximum price of the games.
+     * @return A list of games within the specified price range.
+     */
 
     public List<Game> filterGamesByPriceRange(float minPrice, float maxPrice) {
         return customerService.filterGamesByPriceRange(minPrice, maxPrice);
