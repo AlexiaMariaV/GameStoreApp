@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import Model.HasId;
+import Model.User;
 
 public class FileRepository<T extends HasId> implements IRepository<T> {
     private final String filePath;

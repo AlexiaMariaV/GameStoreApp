@@ -14,6 +14,7 @@ import java.util.Collections;
 public class CustomerService {
     private final IRepository<Game> gameRepository;
     private final IRepository<User> userRepository;
+    private final IRepository<Customer> customerRepository;
     private Customer loggedInCustomer;
 
     /**
@@ -23,9 +24,10 @@ public class CustomerService {
      * @param loggedInCustomer The currently logged-in customer.
      */
 
-    public CustomerService(IRepository<Game> gameRepository, IRepository<User> userRepository, Customer loggedInCustomer) {
+    public CustomerService(IRepository<Game> gameRepository, IRepository<User> userRepository, IRepository<Customer> customerRepository, Customer loggedInCustomer) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.customerRepository = customerRepository;
         this.loggedInCustomer = loggedInCustomer;
     }
 
@@ -92,9 +94,7 @@ public class CustomerService {
         for (int i = 0; i < allGames.size() - 1; i++) {
             for (int j = 0; j < allGames.size() - i - 1; j++) {
                 if (allGames.get(j).getPrice() < allGames.get(j + 1).getPrice()) {
-                    Game temp = allGames.get(j);
-                    allGames.set(j, allGames.get(j + 1));
-                    allGames.set(j + 1, temp);
+                    Collections.swap(allGames, j, j + 1);
                 }
             }
         }
@@ -162,6 +162,7 @@ public class CustomerService {
             float currentFunds = loggedInCustomer.getFundWallet();
             loggedInCustomer.setFundWallet(currentFunds + amount);
             userRepository.update(loggedInCustomer);
+            customerRepository.update(loggedInCustomer);
             System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
             return true;
         }
@@ -170,6 +171,7 @@ public class CustomerService {
             float currentFunds = loggedInCustomer.getFundWallet();
             loggedInCustomer.setFundWallet(currentFunds + amount);
             userRepository.update(loggedInCustomer);
+            customerRepository.update(loggedInCustomer);
             return true;
         }
         return false;
@@ -207,6 +209,7 @@ public class CustomerService {
             if (!alreadyInLibrary) {
                 loggedInCustomer.getGamesLibrary().add(game);
                 userRepository.update(loggedInCustomer);
+                customerRepository.update(loggedInCustomer);
             }
         }
     }
@@ -252,6 +255,7 @@ public class CustomerService {
 
             gameRepository.update(game);
             userRepository.update(loggedInCustomer);
+            customerRepository.update(loggedInCustomer);
 
             return true;
         } else {

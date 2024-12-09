@@ -5,13 +5,17 @@ import Repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Service class for managing user accounts, including authentication, role-based signup, and account deletion.
  */
 
 public class AccountService {
-    private final IRepository<User> userRepository;
+    private final IRepository<User> userRepository; //ambele
+    private final IRepository<Admin> adminRepository;
+    private final  IRepository<Developer> developerRepository;
+    private final IRepository<Customer> customerRepository;
     private User loggedInUser;
 
     /**
@@ -19,8 +23,12 @@ public class AccountService {
      * @param userRepository The repository for storing and retrieving users.
      */
 
-    public AccountService(IRepository<User> userRepository) {
-        this.userRepository = userRepository;
+    public AccountService(IRepository<User> userRepository, IRepository<Admin> adminRepository, IRepository<Developer> developerRepository, IRepository<Customer> customerRepository) {
+
+        this.userRepository = userRepository; //ambele
+        this.adminRepository = adminRepository;
+        this.developerRepository = developerRepository;
+        this.customerRepository = customerRepository;
     }
 
     /**
@@ -44,16 +52,19 @@ public class AccountService {
         switch (role) {
             case "Admin":
                 newUser = new Admin(userId, username, email, password, role);
+                adminRepository.create((Admin) newUser);
                 break;
             case "Developer":
                 newUser = new Developer(userId, username, email, password, role, new ArrayList<Game>());
+                developerRepository.create((Developer) newUser);
                 break;
             default:
                 newUser = new Customer(userId, username, email, password, role, 0.0f, List.of(), List.of(), new ShoppingCart(null, List.of()));
+                customerRepository.create((Customer) newUser);
                 break;
         }
-
         userRepository.create(newUser);
+//        executeAction(newUser, "create");
         return true;
     }
 
@@ -129,6 +140,7 @@ public class AccountService {
     public boolean deleteAccount() {
         if (loggedInUser != null) {
             userRepository.delete(loggedInUser.getId());
+            executeAction(loggedInUser, "delete");
             loggedInUser = null;
             return true;
         } else {
@@ -159,8 +171,46 @@ public class AccountService {
         }
 
         userRepository.delete(userToDelete.getId());
+        executeAction(userToDelete, "delete");
         return true;
     }
+
+    private void executeAction(User user, String action) {
+        switch (user.getRole()) {
+            case "Admin" -> executeForAdmin((Admin) user, action);
+            case "Developer" -> executeForDeveloper((Developer) user, action);
+            case "Customer" -> executeForCustomer((Customer) user, action);
+            default -> throw new IllegalArgumentException("Invalid user role");
+        }
+    }
+
+    private void executeForAdmin(Admin admin, String action) {
+        switch (action) {
+            case "create" -> adminRepository.create(admin);
+            case "update" -> adminRepository.update(admin);
+            case "delete" -> adminRepository.delete(admin.getId());
+            default -> throw new IllegalArgumentException("Invalid action");
+        }
+    }
+
+    private void executeForDeveloper(Developer developer, String action) {
+        switch (action) {
+            case "create" -> developerRepository.create(developer);
+            case "update" -> developerRepository.update(developer);
+            case "delete" -> developerRepository.delete(developer.getId());
+            default -> throw new IllegalArgumentException("Invalid action");
+        }
+    }
+
+    private void executeForCustomer(Customer customer, String action) {
+        switch (action) {
+            case "create" -> customerRepository.create(customer);
+            case "update" -> customerRepository.update(customer);
+            case "delete" -> customerRepository.delete(customer.getId());
+            default -> throw new IllegalArgumentException("Invalid action");
+        }
+    }
+
 
     /**
      * Retrieves the currently logged-in user.

@@ -14,6 +14,7 @@ import java.util.List;
 public class DeveloperService {
     private final IRepository<Game> gameRepository;
     private final IRepository<User> userRepository;
+    private final IRepository<Developer> developerRepository;
     private Developer loggedInDeveloper;
 
     /**
@@ -23,9 +24,10 @@ public class DeveloperService {
      * @param loggedInDeveloper The currently logged-in developer.
      */
 
-    public DeveloperService(IRepository<Game> gameRepository, IRepository<User> userRepository, Developer loggedInDeveloper) {
+    public DeveloperService(IRepository<Game> gameRepository, IRepository<User> userRepository, IRepository<Developer> developerRepository, Developer loggedInDeveloper) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.developerRepository = developerRepository;
         this.loggedInDeveloper = loggedInDeveloper;
     }
 
@@ -63,6 +65,7 @@ public class DeveloperService {
 //        loggedInDeveloper.addPublishedGame(game);
         loggedInDeveloper.getPublishedGames().add(game);
         userRepository.update(loggedInDeveloper);
+        developerRepository.update(loggedInDeveloper);
         return true;
     }
 

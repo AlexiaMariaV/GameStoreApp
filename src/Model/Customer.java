@@ -86,6 +86,6 @@ public class Customer extends User {
 
     @Override
     public Integer getId() {
-        return 0;
+        return userId;
     }
 }
