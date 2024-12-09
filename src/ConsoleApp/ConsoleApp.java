@@ -33,21 +33,46 @@ public class ConsoleApp {
 
 
     public ConsoleApp() {
+        //IN MEMORY
 //        InMemoryRepository<Game> repository = new InMemoryRepository<>();
 //        AccountService accountService = new AccountService(new InMemoryRepository<>());
         // FileRepository (ensure the file paths are correctly set)
 //        FileRepository<Game> repository = new FileRepository<>("games.dat");
 //        AccountService accountService = new AccountService(new FileRepository<>("users.dat"));
+
+        //AMBELE
         IRepository<Game> gameRepository = FileRepository.getInstance(Game.class, "games.dat");
-        IRepository<User> userRepository = FileRepository.getInstance(User.class, "user.dat");
-        AccountService accountService = new AccountService(userRepository);
+        IRepository<User> userRepository = FileRepository.getInstance(User.class, "users.dat");
+        //IN FILE
+        IRepository<Admin> adminRepository = FileRepository.getInstance(Admin.class, "admin.dat");
+        IRepository<Developer> developerRepository = FileRepository.getInstance(Developer.class, "developer.dat");
+        IRepository<Customer> customerRepository = FileRepository.getInstance(Customer.class, "customer.dat");
+        //IRepository<Review> reviewRepository = FileRepository.getInstance(Review.class, "review.dat");
+
+        //IN FILE
+        AccountService accountService = new AccountService(userRepository, adminRepository, developerRepository, customerRepository);
         GameService gameService = new GameService(gameRepository);
-        AdminService adminService = new AdminService(gameRepository);
-        DeveloperService developerService = new DeveloperService(gameRepository, userRepository,null);
-        CustomerService customerService = new CustomerService(gameRepository, userRepository,null);
+        AdminService adminService = new AdminService(gameRepository, adminRepository);
+        DeveloperService developerService = new DeveloperService(gameRepository, userRepository, developerRepository, null);
+        CustomerService customerService = new CustomerService(gameRepository, userRepository, customerRepository, null);
         ShoppingCart placeholderCart = new ShoppingCart(null, new ArrayList<>());
         Customer placeholderCustomer = new Customer(null, "placeholder", "placeholder@example.com", "password", "Customer",0.0f, new ArrayList<>(), new ArrayList<>(), placeholderCart );
         ShoppingCartService shoppingCartService = new ShoppingCartService(placeholderCustomer);
+
+
+        //IN MEMORY
+//        IRepository<User> userRepository = FileRepository.getInstance(User.class, "user.dat");
+//        AccountService accountService = new AccountService(userRepository);
+//        GameService gameService = new GameService(gameRepository);
+//        AdminService adminService = new AdminService(gameRepository);
+//        DeveloperService developerService = new DeveloperService(gameRepository, userRepository,null);
+//        CustomerService customerService = new CustomerService(gameRepository, userRepository,null);
+//        ShoppingCart placeholderCart = new ShoppingCart(null, new ArrayList<>());
+//        Customer placeholderCustomer = new Customer(null, "placeholder", "placeholder@example.com", "password", "Customer",0.0f, new ArrayList<>(), new ArrayList<>(), placeholderCart );
+//        ShoppingCartService shoppingCartService = new ShoppingCartService(placeholderCustomer);
+
+
+
         this.accountController = new AccountController(accountService);
         this.gameController = new GameController(gameService);
         this.adminController = new AdminController(adminService);

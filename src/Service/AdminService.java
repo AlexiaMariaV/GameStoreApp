@@ -1,5 +1,6 @@
 package Service;
 
+import Model.Admin;
 import Model.Discount;
 import Repository.IRepository;
 import Model.Game;
@@ -10,14 +11,16 @@ import Model.Game;
 
 public class AdminService {
     private final IRepository<Game> gameRepository;
+    private final IRepository<Admin> adminRepository;
 
     /**
      * Constructs the AdminService with a game repository.
      * @param gameRepository The repository for managing games.
      */
 
-    public AdminService(IRepository<Game> gameRepository) {
+    public AdminService(IRepository<Game> gameRepository, IRepository<Admin> adminRepository) {
         this.gameRepository = gameRepository;
+        this.adminRepository = adminRepository;
     }
 
     /**
