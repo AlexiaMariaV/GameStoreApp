@@ -47,14 +47,15 @@ public class ConsoleApp {
         IRepository<Admin> adminRepository = FileRepository.getInstance(Admin.class, "admin.dat");
         IRepository<Developer> developerRepository = FileRepository.getInstance(Developer.class, "developer.dat");
         IRepository<Customer> customerRepository = FileRepository.getInstance(Customer.class, "customer.dat");
-        //IRepository<Review> reviewRepository = FileRepository.getInstance(Review.class, "review.dat");
-
+        IRepository<Review> reviewRepository = FileRepository.getInstance(Review.class, "review.dat");
+        IRepository<Discount> discountRepository = FileRepository.getInstance(Discount.class, "discount.dat");
+        IRepository<PaymentMethod> paymentMethodRepository = FileRepository.getInstance(PaymentMethod.class, "paymentMethod.dat");
         //IN FILE
         AccountService accountService = new AccountService(userRepository, adminRepository, developerRepository, customerRepository);
         GameService gameService = new GameService(gameRepository);
-        AdminService adminService = new AdminService(gameRepository, adminRepository);
+        AdminService adminService = new AdminService(gameRepository, adminRepository, discountRepository);
         DeveloperService developerService = new DeveloperService(gameRepository, userRepository, developerRepository, null);
-        CustomerService customerService = new CustomerService(gameRepository, userRepository, customerRepository, null);
+        CustomerService customerService = new CustomerService(gameRepository, userRepository, customerRepository, reviewRepository, paymentMethodRepository, null);
         ShoppingCart placeholderCart = new ShoppingCart(null, new ArrayList<>());
         Customer placeholderCustomer = new Customer(null, "placeholder", "placeholder@example.com", "password", "Customer",0.0f, new ArrayList<>(), new ArrayList<>(), placeholderCart );
         ShoppingCartService shoppingCartService = new ShoppingCartService(placeholderCustomer);

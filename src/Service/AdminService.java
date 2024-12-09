@@ -12,15 +12,17 @@ import Model.Game;
 public class AdminService {
     private final IRepository<Game> gameRepository;
     private final IRepository<Admin> adminRepository;
+    private final IRepository<Discount> discountRepository;
 
     /**
      * Constructs the AdminService with a game repository.
      * @param gameRepository The repository for managing games.
      */
 
-    public AdminService(IRepository<Game> gameRepository, IRepository<Admin> adminRepository) {
+    public AdminService(IRepository<Game> gameRepository, IRepository<Admin> adminRepository, IRepository<Discount> discountRepository) {
         this.gameRepository = gameRepository;
         this.adminRepository = adminRepository;
+        this.discountRepository = discountRepository;
     }
 
     /**
@@ -54,9 +56,8 @@ public class AdminService {
         }
 
         Discount discount = new Discount(gameId, discountPercentage);
+        discountRepository.create(discount);
         game.setDiscount(discount);
-
-        //new
         gameRepository.update(game);
 
         float discountedPrice = game.getPrice() * (1 - discountPercentage / 100);

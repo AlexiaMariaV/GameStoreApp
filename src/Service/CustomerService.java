@@ -15,6 +15,8 @@ public class CustomerService {
     private final IRepository<Game> gameRepository;
     private final IRepository<User> userRepository;
     private final IRepository<Customer> customerRepository;
+    private final IRepository<Review> reviewRepository;
+    private final IRepository<PaymentMethod> paymentMethodRepository;
     private Customer loggedInCustomer;
 
     /**
@@ -24,10 +26,12 @@ public class CustomerService {
      * @param loggedInCustomer The currently logged-in customer.
      */
 
-    public CustomerService(IRepository<Game> gameRepository, IRepository<User> userRepository, IRepository<Customer> customerRepository, Customer loggedInCustomer) {
+    public CustomerService(IRepository<Game> gameRepository, IRepository<User> userRepository, IRepository<Customer> customerRepository, IRepository<Review> reviewRepository, IRepository<PaymentMethod> paymentMethodRepository, Customer loggedInCustomer) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
+        this.reviewRepository = reviewRepository;
+        this.paymentMethodRepository = paymentMethodRepository;
         this.loggedInCustomer = loggedInCustomer;
     }
 
@@ -161,6 +165,7 @@ public class CustomerService {
         if (amount > 0) {
             float currentFunds = loggedInCustomer.getFundWallet();
             loggedInCustomer.setFundWallet(currentFunds + amount);
+            paymentMethodRepository.create(paymentMethod);
             userRepository.update(loggedInCustomer);
             customerRepository.update(loggedInCustomer);
             System.out.println("The amount has been successfully added through: " + paymentMethod.getPaymentType());
@@ -170,6 +175,7 @@ public class CustomerService {
         if (amount < 0) {
             float currentFunds = loggedInCustomer.getFundWallet();
             loggedInCustomer.setFundWallet(currentFunds + amount);
+            paymentMethodRepository.create(paymentMethod);
             userRepository.update(loggedInCustomer);
             customerRepository.update(loggedInCustomer);
             return true;
@@ -252,7 +258,7 @@ public class CustomerService {
             Review review = new Review(game.getReviews().size() + 1, reviewText, loggedInCustomer, game);
             game.getReviews().add(review);
             loggedInCustomer.getReviews().add(review);
-
+            reviewRepository.create(review);
             gameRepository.update(game);
             userRepository.update(loggedInCustomer);
             customerRepository.update(loggedInCustomer);
