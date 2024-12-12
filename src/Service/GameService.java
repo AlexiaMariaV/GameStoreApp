@@ -3,6 +3,7 @@ package Service;
 import Model.Game;
 import Repository.IRepository;
 import java.util.List;
+import Exception.BusinessLogicException;
 
 /**
  * Service class for managing games, including adding games to the repository.
@@ -36,7 +37,7 @@ public class GameService {
             gameRepository.create(game);
             System.out.println("Game added: " + game.getGameName());
         }catch (IllegalArgumentException e){
-            System.out.println(e.getMessage());
+            throw new BusinessLogicException("Error while adding game: " + e.getMessage());
         }
     }
 

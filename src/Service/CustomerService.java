@@ -6,6 +6,7 @@ import Repository.IRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import Exception.BusinessLogicException;
 
 /**
  * Service class for managing customer-specific functions, such as browsing games, managing wallet funds, and leaving reviews.
@@ -61,6 +62,9 @@ public class CustomerService {
 
     public Game searchGameByName(String gameName) {
         List<Game> games = gameRepository.getAll();
+        if (games.isEmpty()) {
+            throw new BusinessLogicException("No games available.");
+        }
         for (Game game : games) {
             if (game.getGameName().equalsIgnoreCase(gameName)) {
                 return game;
@@ -76,7 +80,9 @@ public class CustomerService {
 
     public List<Game> sortGamesByNameAscending() {
         List<Game> games = new ArrayList<>(gameRepository.getAll());
-
+        if (games.isEmpty()) {
+            throw new BusinessLogicException("No games available to sort.");
+        }
         for (int i = 0; i < games.size() - 1; i++) {
             for (int j = 0; j < games.size() - i - 1; j++) {
                 if (games.get(j).getGameName().compareToIgnoreCase(games.get(j + 1).getGameName()) > 0) {
@@ -94,7 +100,9 @@ public class CustomerService {
 
     public List<Game> sortGamesByPriceDescending() {
         List<Game> allGames = new ArrayList<>(gameRepository.getAll());
-
+        if (allGames.isEmpty()) {
+            throw new BusinessLogicException("No games available to sort.");
+        }
         for (int i = 0; i < allGames.size() - 1; i++) {
             for (int j = 0; j < allGames.size() - i - 1; j++) {
                 if (allGames.get(j).getPrice() < allGames.get(j + 1).getPrice()) {
@@ -118,6 +126,9 @@ public class CustomerService {
                 gamesByGenre.add(game);
             }
         }
+        if (gamesByGenre.isEmpty()) {
+            throw new BusinessLogicException("No games found for the specified genre: " + genre);
+        }
         return gamesByGenre;
     }
 
@@ -136,7 +147,9 @@ public class CustomerService {
                 gamesByPriceRange.add(game);
             }
         }
-
+        if (gamesByPriceRange.isEmpty()) {
+            throw new BusinessLogicException("No games found in the price range: $" + minPrice + " - $" + maxPrice);
+        }
         return gamesByPriceRange;
     }
 
@@ -158,8 +171,7 @@ public class CustomerService {
 
     public boolean addFundsToWallet(float amount, PaymentMethod paymentMethod) {
         if (loggedInCustomer == null) {
-            System.out.println("No user logged in.");
-            return false;
+            throw new BusinessLogicException("No customer is logged in.");
         }
 
         if (amount > 0) {
@@ -190,8 +202,7 @@ public class CustomerService {
 
     public float getWalletBalance() {
         if (loggedInCustomer == null) {
-            System.out.println("No user logged in.");
-            return 0;
+            throw new BusinessLogicException("No customer is logged in.");
         }
         return loggedInCustomer.getFundWallet();
     }
@@ -241,8 +252,7 @@ public class CustomerService {
 
     public boolean addReviewToGame(Game game, String reviewText) {
         if (loggedInCustomer == null) {
-            System.out.println("No user logged in.");
-            return false;
+            throw new BusinessLogicException("No customer is logged in.");
         }
 
         boolean ownsGame = false;
@@ -265,8 +275,7 @@ public class CustomerService {
 
             return true;
         } else {
-            System.out.println("You can only review games that you own.");
-            return false;
+            throw new BusinessLogicException("You can only review games that you own.");
         }
     }
 

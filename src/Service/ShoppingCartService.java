@@ -4,6 +4,7 @@ import Model.Customer;
 import Model.Game;
 import Model.ShoppingCart;
 import java.util.List;
+import Exception.BusinessLogicException;
 
 /**
  * Service class for managing the customer's shopping cart, including adding/removing games and calculating total price.
@@ -30,7 +31,7 @@ public class ShoppingCartService {
         if (!shoppingCart.getListOfGames().contains(game)) {
             shoppingCart.getListOfGames().add(game);
         } else {
-            System.out.println("Game is already in the cart.");
+            throw new BusinessLogicException("Game is already in the cart");
         }
     }
 

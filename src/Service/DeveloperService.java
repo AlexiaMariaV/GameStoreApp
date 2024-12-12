@@ -4,6 +4,7 @@ import Model.Developer;
 import Model.Game;
 import Model.User;
 import Repository.IRepository;
+import Exception.BusinessLogicException;
 
 import java.util.List;
 
@@ -48,15 +49,13 @@ public class DeveloperService {
 
     public boolean publishGame(Game game) {
         if (loggedInDeveloper == null) {
-            System.out.println("You are not logged in as a developer.");
-            return false;
+            throw new BusinessLogicException("You are not logged in as a developer.");
         }
 
         List<Game> allGames = gameRepository.getAll();
         for (Game existingGame : allGames) {
             if (existingGame.getGameName().equalsIgnoreCase(game.getGameName())) {
-                System.out.println("A game with this name already exists.");
-                return false;
+                throw new BusinessLogicException("A game with this name already exists.");
             }
         }
 
@@ -105,8 +104,7 @@ public class DeveloperService {
             return true;
         }
 
-        System.out.println("You don't have permission to modify this game or game not found.");
-        return false;
+        throw new BusinessLogicException("You don't have permission to modify this game.");
     }
 
     /**

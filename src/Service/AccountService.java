@@ -6,6 +6,7 @@ import Repository.IRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import Exception.BusinessLogicException;
 
 /**
  * Service class for managing user accounts, including authentication, role-based signup, and account deletion.
@@ -83,8 +84,7 @@ public class AccountService {
                 return true;
             }
         }
-        System.out.println("Wrong email or password!");
-        return false;
+        throw new BusinessLogicException("Wrong email or password.");
     }
 
     /**
@@ -97,7 +97,7 @@ public class AccountService {
             loggedInUser = null;
             return true;
         }
-        return false;
+        throw new BusinessLogicException("No user is logged in to log out.");
     }
 
 
@@ -144,8 +144,7 @@ public class AccountService {
             loggedInUser = null;
             return true;
         } else {
-            System.out.println("No user is logged in to delete.");
-            return false;
+            throw new BusinessLogicException("No user is logged in to delete.");
         }
     }
 
@@ -167,7 +166,7 @@ public class AccountService {
             }
         }
         if (userToDelete == null) {
-            return false;
+            throw new BusinessLogicException("User with the given email does not exist.");
         }
 
         userRepository.delete(userToDelete.getId());
