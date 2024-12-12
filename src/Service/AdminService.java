@@ -4,6 +4,7 @@ import Model.Admin;
 import Model.Discount;
 import Repository.IRepository;
 import Model.Game;
+import Exception.BusinessLogicException;
 
 /**
  * Service class for admin-specific functions, such as managing games and applying discounts.
@@ -34,8 +35,7 @@ public class AdminService {
     public void deleteGame(int gameId) {
         Game game = gameRepository.get(gameId);
         if (game == null) {
-            System.out.println("Game with ID " + gameId + " not found.");
-            return;
+            throw new BusinessLogicException("Game with ID " + gameId + " not found.");
         }
         gameRepository.delete(gameId);
     }
@@ -51,8 +51,7 @@ public class AdminService {
     public void applyDiscountToGame(int gameId, float discountPercentage) {
         Game game = gameRepository.get(gameId);
         if (game == null) {
-            System.out.println("Game with ID " + gameId + " not found.");
-            return;
+            throw new BusinessLogicException("Game with ID " + gameId + " not found.");
         }
 
         Discount discount = new Discount(gameId, discountPercentage);

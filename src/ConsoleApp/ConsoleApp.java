@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import Exception.ValidationException;
+import Exception.EntityNotFoundException;
+import Exception.BusinessLogicException;
+
 /**
  * ConsoleApp class provides the main interface for interacting with the gaming platform
  * through the console. It manages various user roles (Admin, Developer, Customer)
@@ -307,17 +311,28 @@ public class ConsoleApp {
      */
 
     private void handleSignUp() {
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+        try {
+            System.out.print("Username: ");
+            String username = scanner.nextLine().trim();
+            if (username.isEmpty()) throw new ValidationException("Username cannot be empty!");
 
-        if (accountController.signUp(username, email, password)) {
-            System.out.println("Sign-up successful!");
-        } else {
-            System.out.println("Sign-up failed! Email may already be in use.");
+            System.out.print("Email: ");
+            String email = scanner.nextLine().trim();
+            if (!email.contains("@")) throw new ValidationException("Invalid email format!");
+
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+            if (password.isEmpty()) throw new ValidationException("Password cannot be empty!");
+
+            if (accountController.signUp(username, email, password)) {
+                System.out.println("Sign-up successful!");
+            } else {
+                System.out.println("Sign-up failed! Email may already be in use.");
+            }
+        } catch (ValidationException ex) {
+            System.out.println("Validation Error: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("An unexpected error occurred: " + ex.getMessage());
         }
     }
 
@@ -326,34 +341,43 @@ public class ConsoleApp {
      */
 
     private void handleLogIn() {
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+        try {
+            System.out.print("Email: ");
+            String email = scanner.nextLine();
+            if (!email.contains("@")) throw new ValidationException("Invalid email format!");
 
-        if (accountController.logIn(email, password)) {
-            System.out.println("Login successful!");
-            String role = accountController.getLoggedInUser().getRole();
-            if (role.equals("Admin")) {
-                while (accountController.getLoggedInUser() != null) {
-                    showAdminMenu();
-                }
-            } else if (role.equals("Developer")) {
-                while (accountController.getLoggedInUser() != null) {
-                    showDeveloperMenu();
-                }
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+            if (password.isEmpty()) throw new ValidationException("Password cannot be empty!");
 
-            } else if (role.equals("Customer")) {
-                Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
-                customerController.setCustomer(loggedInCustomer);
-                while(accountController.getLoggedInUser() != null)
-                    showCustomerMenu();
+            if (accountController.logIn(email, password)) {
+                System.out.println("Login successful!");
+                String role = accountController.getLoggedInUser().getRole();
+                if (role.equals("Admin")) {
+                    while (accountController.getLoggedInUser() != null) {
+                        showAdminMenu();
+                    }
+                } else if (role.equals("Developer")) {
+                    while (accountController.getLoggedInUser() != null) {
+                        showDeveloperMenu();
+                    }
+                } else if (role.equals("Customer")) {
+                    Customer loggedInCustomer = (Customer) accountController.getLoggedInUser();
+                    customerController.setCustomer(loggedInCustomer);
+                    while (accountController.getLoggedInUser() != null)
+                        showCustomerMenu();
+                } else {
+                    throw new BusinessLogicException("Unknown role detected!");
+                }
+            } else {
+                System.out.println("Invalid email or password.");
             }
-            else {
-                System.out.println("Unknown role.");
-            }
-        } else {
-            System.out.println("Invalid email or password.");
+        } catch (ValidationException ex) {
+            System.out.println("Validation Error: " + ex.getMessage());
+        } catch (BusinessLogicException ex) {
+            System.out.println("Business Logic Error: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("An unexpected error occurred: " + ex.getMessage());
         }
     }
 
@@ -362,15 +386,27 @@ public class ConsoleApp {
      */
 
     private void handleViewGame() {
-        System.out.print("Enter Game ID: ");
-        Integer gameId = scanner.nextInt();
-        scanner.nextLine();
+        try {
+            System.out.print("Enter Game ID: ");
+            String input = scanner.nextLine();
 
-        Game game = gameController.getGameById(gameId);
-        if (game != null) {
-            System.out.println("Game Details: " + game);
-        } else {
-            System.out.println("Game not found.");
+            if (input.isBlank()) {
+                throw new ValidationException("Game ID cannot be empty. Please enter a valid ID.");
+            }
+
+            Integer gameId = scanner.nextInt();
+            scanner.nextLine();
+
+            Game game = gameController.getGameById(gameId);
+            if (game != null) {
+                System.out.println("Game Details: " + game);
+            } else {
+                throw new EntityNotFoundException("Game with ID " + gameId + " not found.");
+            }
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
         }
     }
 
@@ -379,14 +415,18 @@ public class ConsoleApp {
      */
 
     private void handleListAllGames() {
-        List<Game> games = gameController.getAllGames();
-        if (games.isEmpty()) {
-            System.out.println("No games available.");
-        } else {
-            System.out.println("Available Games:");
-            for (Game game : games) {
-                System.out.println(game);
+        try {
+            List<Game> games = gameController.getAllGames();
+            if (games.isEmpty()) {
+                throw new EntityNotFoundException("No games available.");
+            } else {
+                System.out.println("Available Games:");
+                for (Game game : games) {
+                    System.out.println(game);
+                }
             }
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -395,17 +435,26 @@ public class ConsoleApp {
      */
 
     private void handleDeleteAccount() {
-        System.out.print("Are you sure you want to delete your account? (yes/no): ");
-        String confirmation = scanner.nextLine().toLowerCase();
-
-        if ("yes".equals(confirmation)) {
-            if (accountController.deleteAccount()) {
-                System.out.println("Your account has been deleted.");
-            } else {
-                System.out.println("Account deletion failed. No user is logged in.");
+        try {
+            if (accountController.getLoggedInUser() == null) {
+                throw new EntityNotFoundException("No user is logged in to delete.");
             }
-        } else {
-            System.out.println("Account deletion canceled.");
+            System.out.print("Are you sure you want to delete your account? (yes/no): ");
+            String confirmation = scanner.nextLine().toLowerCase();
+
+            if ("yes".equals(confirmation)) {
+                if (accountController.deleteAccount()) {
+                    System.out.println("Your account has been deleted.");
+                } else {
+                    throw new BusinessLogicException("Account deletion failed.");
+                }
+            } else {
+                System.out.println("Account deletion canceled.");
+            }
+        } catch (EntityNotFoundException ex) {
+            System.out.println("Entity Error: " + ex.getMessage());
+        } catch (BusinessLogicException ex) {
+            System.out.println("Business Logic Error: " + ex.getMessage());
         }
     }
 
@@ -414,12 +463,15 @@ public class ConsoleApp {
      */
 
     private void handleLogOut() {
-        boolean success = accountController.logOut();
-
-        if (success) {
-            System.out.println("Logged out successfully. Returning to Main Menu.");
-        } else {
-            System.out.println("No user is logged in to log out.");
+        try {
+            boolean success = accountController.logOut();
+            if (success) {
+                System.out.println("Logged out successfully. Returning to Main Menu.");
+            } else {
+                throw new ValidationException("No user is logged in to log out.");
+            }
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -441,17 +493,29 @@ public class ConsoleApp {
      */
 
     private void handleDeleteGame() {
-        if (accountController.getLoggedInUser() == null || !accountController.getLoggedInUser().getRole().equals("Admin")) {
-            System.out.println("You don't have permission to delete games.");
-            return;
+        try {
+            if (accountController.getLoggedInUser() == null ||
+                    !accountController.getLoggedInUser().getRole().equals("Admin")) {
+                throw new BusinessLogicException("You don't have permission to delete games.");
+            }
+
+            System.out.print("Enter the game ID you want to delete: ");
+            String input = scanner.nextLine();
+
+            if (input.isBlank()) {
+                throw new ValidationException("Game ID cannot be empty. Please enter a valid ID.");
+            }
+
+            Integer gameId = scanner.nextInt();
+            scanner.nextLine(); 
+
+            adminController.deleteGame(gameId);
+            System.out.println("Game with ID " + gameId + " has been successfully deleted.");
+        } catch (ValidationException | BusinessLogicException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
         }
-
-        System.out.print("Enter the game ID you want to delete: ");
-        int gameId = scanner.nextInt();
-        scanner.nextLine();
-
-        adminController.deleteGame(gameId);
-        System.out.println("Game with ID " + gameId + " has been successfully deleted.");
     }
 
     /**
@@ -460,13 +524,23 @@ public class ConsoleApp {
 
     private void handleDeleteAnyAccount() {
 
-        System.out.print("Please enter the email of the user whose account you would like to delete: ");
-        String email = scanner.nextLine();
+        try {
+            System.out.print("Please enter the email of the user whose account you would like to delete: ");
+            String email = scanner.nextLine();
 
-        if (accountController.deleteAnyAccount(email)) {
-            System.out.println("The account has been deleted.");
-        } else {
-            System.out.println("The account could not be deleted. Please check the email.");
+            if (email.isBlank()) {
+                throw new ValidationException("Email cannot be empty. Please enter a valid email.");
+            }
+
+            if (accountController.deleteAnyAccount(email)) {
+                System.out.println("The account has been deleted.");
+            } else {
+                throw new EntityNotFoundException("The account with the specified email does not exist.");
+            }
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
         }
 
     }
@@ -476,13 +550,30 @@ public class ConsoleApp {
      */
 
     private void handleApplyDiscountToGame() {
-        System.out.print("Enter the game ID: ");
-        int gameId = scanner.nextInt();
-        System.out.print("Enter discount percentage: ");
-        float discountPercentage = scanner.nextFloat();
-        scanner.nextLine();
+        try {
+            System.out.print("Enter the game ID: ");
+            int gameId = scanner.nextInt();
+            scanner.nextLine();
 
-        adminController.applyDiscountToGame(gameId, discountPercentage);
+            if (gameId <= 0) {
+                throw new ValidationException("Game ID must be a positive number.");
+            }
+
+            System.out.print("Enter discount percentage: ");
+            float discountPercentage = scanner.nextFloat();
+            scanner.nextLine();
+
+            if (discountPercentage <= 0 || discountPercentage > 100) {
+                throw new ValidationException("Discount percentage must be between 1 and 100.");
+            }
+
+            adminController.applyDiscountToGame(gameId, discountPercentage);
+            System.out.println("Discount applied successfully.");
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
+        }
     }
 
 
@@ -496,29 +587,58 @@ public class ConsoleApp {
      */
 
     private void handlePublishGame(){
-        User loggedUser = accountController.getLoggedInUser();
-        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
-            System.out.println("You don't have permission to publish games.");
-            return;
+        try {
+            User loggedUser = accountController.getLoggedInUser();
+            if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
+                throw new BusinessLogicException("You don't have permission to publish games.");
+            }
+
+            System.out.print("Game name: ");
+            String gameName = scanner.nextLine();
+
+            if (gameName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty.");
+            }
+
+            System.out.print("Game description: ");
+            String gameDescription = scanner.nextLine();
+
+            if (gameDescription.isBlank()) {
+                throw new ValidationException("Game description cannot be empty.");
+            }
+
+            System.out.print("Game genre (ex: ACTION, ADVENTURE): ");
+            String genreInput = scanner.nextLine();
+
+            if (genreInput.isBlank()) {
+                throw new ValidationException("Game genre cannot be empty.");
+            }
+
+            GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
+
+            System.out.print("Price: ");
+            if (!scanner.hasNextInt()) {
+                scanner.nextLine();
+                throw new ValidationException("Price must be a valid integer.");
+            }
+            int price = scanner.nextInt();
+            scanner.nextLine();
+
+            if (price <= 0) {
+                throw new ValidationException("Price must be greater than zero.");
+            }
+
+            Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
+
+            Developer developer = (Developer) loggedUser;
+            developerController.setDeveloper(developer);
+            developerController.publishGame(game);
+            System.out.println("Game published successfully: " + game.getGameName());
+        } catch (ValidationException | BusinessLogicException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
         }
-
-        System.out.print("Game name: ");
-        String gameName = scanner.nextLine();
-        System.out.print("Game description: ");
-        String gameDescription = scanner.nextLine();
-        System.out.print("Game genre (ex: ACTION, ADVENTURE): ");
-        String genreInput = scanner.nextLine();
-        GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
-        System.out.print("Price: ");
-        float price = scanner.nextFloat();
-        scanner.nextLine();
-
-        Game game = new Game(null, gameName, gameDescription, gameGenre, price, List.of());
-
-        Developer developer = (Developer) loggedUser;
-        developerController.setDeveloper(developer);
-        developerController.publishGame(game);
-        System.out.println("Game published successfully: " + game.getGameName());
     }
 
     /**
@@ -526,29 +646,57 @@ public class ConsoleApp {
      */
 
     private void handleModifyGame() {
-        User loggedUser = accountController.getLoggedInUser();
-        if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
-            System.out.println("You don't have permission to modify games.");
-            return;
+        try {
+            User loggedUser = accountController.getLoggedInUser();
+            if (loggedUser == null || !loggedUser.getRole().equals("Developer")) {
+                throw new BusinessLogicException("You don't have permission to modify games.");
+            }
+            System.out.print("Game ID: ");
+            if (!scanner.hasNextInt()) {
+                scanner.nextLine();
+                throw new ValidationException("Invalid input. Game ID must be an integer.");
+            }
+            int gameID = scanner.nextInt();
+            scanner.nextLine();
+            System.out.print("New Name: ");
+            String newName = scanner.nextLine();
+            if (newName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty.");
+            }
+            System.out.print("New Game description: ");
+            String newDescription = scanner.nextLine();
+            if (newDescription.isBlank()) {
+                throw new ValidationException("Game description cannot be empty.");
+            }
+            System.out.print("New Game genre: ");
+            String newGenre = scanner.nextLine();
+            if (newGenre.isBlank()) {
+                throw new ValidationException("Game genre cannot be empty.");
+            }
+            System.out.print("New Price: ");
+            if (!scanner.hasNextInt()) {
+                scanner.nextLine();
+                throw new ValidationException("Invalid input. Price must be an integer.");
+            }
+            float newPrice = scanner.nextFloat();
+            scanner.nextLine();
+
+            if (newPrice <= 0) {
+                throw new ValidationException("Price must be greater than zero.");
+            }
+
+            Developer developer = (Developer) loggedUser;
+            developerController.setDeveloper(developer);
+
+
+            developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
+            System.out.println("Game modified successfully.");
+        } catch (ValidationException | BusinessLogicException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred. Please try again.");
         }
-        System.out.print("Game ID: ");
-        int gameID = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("New Name: ");
-        String newName = scanner.nextLine();
-        System.out.print("New Game description: ");
-        String newDescription = scanner.nextLine();
-        System.out.print("New Game genre: ");
-        String newGenre = scanner.nextLine();
-        System.out.print("New Price: ");
-        float newPrice = scanner.nextFloat();
-        scanner.nextLine();
 
-        Developer developer = (Developer) loggedUser;
-        developerController.setDeveloper(developer);
-
-
-        developerController.modifyGame(gameID, newName, newDescription, newGenre, newPrice);
     }
 
 
@@ -559,13 +707,20 @@ public class ConsoleApp {
      */
 
     private void handleSearchGameByName() {
-        System.out.print("Enter the name of the game: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
-        if (game != null) {
-            System.out.println("Game found: " + game);
-        } else {
-            System.out.println("Game not found.");
+        try {
+            System.out.print("Enter the name of the game: ");
+            String gameName = scanner.nextLine();
+            if (gameName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty.");
+            }
+            Game game = customerController.searchGameByName(gameName);
+            if (game != null) {
+                System.out.println("Game found: " + game);
+            } else {
+                throw new EntityNotFoundException("Game not found.");
+            }
+        } catch (ValidationException | EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -574,15 +729,19 @@ public class ConsoleApp {
      */
 
     private void handleSortGamesByNameAscending() {
-        List<Game> sortedGames = customerController.sortGamesByNameAscending();
+        try {
+            List<Game> sortedGames = customerController.sortGamesByNameAscending();
 
-        if (sortedGames.isEmpty()) {
-            System.out.println("No games available.");
-        } else {
-            System.out.println("Games sorted by name (ascending):");
-            for (Game game : sortedGames) {
-                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            if (sortedGames.isEmpty()) {
+                throw new EntityNotFoundException("No games available to sort.");
+            } else {
+                System.out.println("Games sorted by name (ascending):");
+                for (Game game : sortedGames) {
+                    System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+                }
             }
+        } catch (EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -591,11 +750,19 @@ public class ConsoleApp {
      */
 
     private void handleSortGamesByPriceDescending() {
-        List<Game> sortedGames = customerController.sortGamesByPriceDescending();
+        try {
+            List<Game> sortedGames = customerController.sortGamesByPriceDescending();
 
-        System.out.println("Games sorted by price (descending):");
-        for (Game game : sortedGames) {
-            System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            if (sortedGames.isEmpty()) {
+                throw new EntityNotFoundException("No games available to sort.");
+            } else {
+                System.out.println("Games sorted by price (descending):");
+                for (Game game : sortedGames) {
+                    System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+                }
+            }
+        } catch (EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -604,17 +771,24 @@ public class ConsoleApp {
      */
 
     private void handleFilterByGenre() {
-        System.out.print("Enter genre: ");
-        String genre = scanner.nextLine();
-
-        List<Game> games = customerController.filterGamesByGenre(genre);
-        if (games.isEmpty()) {
-            System.out.println("No games found for the specified genre.");
-        } else {
-            System.out.println("Games in genre " + genre + ":");
-            for (Game game : games) {
-                System.out.println(game);
+        try {
+            System.out.print("Enter genre: ");
+            String genre = scanner.nextLine();
+            if (genre.isBlank()) {
+                throw new ValidationException("Genre cannot be empty.");
             }
+
+            List<Game> games = customerController.filterGamesByGenre(genre);
+            if (games.isEmpty()) {
+                throw new EntityNotFoundException("No games found for the specified genre.");
+            } else {
+                System.out.println("Games in genre " + genre + ":");
+                for (Game game : games) {
+                    System.out.println(game);
+                }
+            }
+        } catch (ValidationException | EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -623,21 +797,29 @@ public class ConsoleApp {
      */
 
     private void handleFilterGamesByPriceRange() {
-        System.out.print("Enter minimum price: ");
-        float minPrice = scanner.nextFloat();
-        System.out.print("Enter maximum price: ");
-        float maxPrice = scanner.nextFloat();
-        scanner.nextLine();
+        try {
+            System.out.print("Enter minimum price: ");
+            float minPrice = scanner.nextFloat();
+            System.out.print("Enter maximum price: ");
+            float maxPrice = scanner.nextFloat();
+            scanner.nextLine();
 
-        List<Game> filteredGames = customerController.filterGamesByPriceRange(minPrice, maxPrice);
-
-        if (filteredGames.isEmpty()) {
-            System.out.println("No games found in the specified price range.");
-        } else {
-            System.out.println("Games in the price range $" + minPrice + " - $" + maxPrice + ":");
-            for (Game game : filteredGames) {
-                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+            if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+                throw new ValidationException("Invalid price range provided. Minimum price must be less than or equal to maximum price and non-negative.");
             }
+
+            List<Game> filteredGames = customerController.filterGamesByPriceRange(minPrice, maxPrice);
+
+            if (filteredGames.isEmpty()) {
+                throw new EntityNotFoundException("No games found in the specified price range.");
+            } else {
+                System.out.println("Games in the price range $" + minPrice + " - $" + maxPrice + ":");
+                for (Game game : filteredGames) {
+                    System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+                }
+            }
+        } catch (ValidationException | EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -647,14 +829,18 @@ public class ConsoleApp {
      */
 
     private void handleViewCart() {
-        List<Game> cartGames = shoppingCartController.viewCartContents();
-        if (cartGames.isEmpty()) {
-            System.out.println("Your cart is empty.");
-        } else {
-            System.out.println("Games in your cart:");
-            for (Game game : cartGames) {
-                System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+        try {
+            List<Game> cartGames = shoppingCartController.viewCartContents();
+            if (cartGames.isEmpty()) {
+                throw new EntityNotFoundException("Your cart is empty.");
+            } else {
+                System.out.println("Games in your cart:");
+                for (Game game : cartGames) {
+                    System.out.println("- " + game.getGameName() + " ($" + game.getPrice() + ")");
+                }
             }
+        } catch (EntityNotFoundException ex) {
+            System.out.println("Entity Error: " + ex.getMessage());
         }
     }
 
@@ -663,14 +849,21 @@ public class ConsoleApp {
      */
 
     private void handleAddGameToCart() {
-        System.out.print("Enter the name of the game to add to the cart: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
-        if (game != null) {
-            shoppingCartController.addGame(game);
-            System.out.println("Game added to cart: " + game.getGameName());
-        } else {
-            System.out.println("Game not found.");
+        try {
+            System.out.print("Enter the name of the game to add to the cart: ");
+            String gameName = scanner.nextLine();
+            if (gameName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty or blank.");
+            }
+            Game game = customerController.searchGameByName(gameName);
+            if (game != null) {
+                shoppingCartController.addGame(game);
+                System.out.println("Game added to cart: " + game.getGameName());
+            } else {
+                throw new EntityNotFoundException("Game not found.");
+            }
+        } catch (ValidationException | EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -679,14 +872,21 @@ public class ConsoleApp {
      */
 
     private void handleRemoveGameFromCart() {
-        System.out.print("Enter the name of the game to remove from the cart: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
-        if (game != null) {
-            shoppingCartController.removeGame(game);
-            System.out.println("Game removed from cart: " + game.getGameName());
-        } else {
-            System.out.println("Game not found in cart.");
+        try {
+            System.out.print("Enter the name of the game to remove from the cart: ");
+            String gameName = scanner.nextLine();
+            if (gameName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty or blank.");
+            }
+            Game game = customerController.searchGameByName(gameName);
+            if (game != null) {
+                shoppingCartController.removeGame(game);
+                System.out.println("Game removed from cart: " + game.getGameName());
+            } else {
+                throw new EntityNotFoundException("Game not found in cart.");
+            }
+        } catch (ValidationException | EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -695,8 +895,15 @@ public class ConsoleApp {
      */
 
     private void handleViewCartTotalPrice() {
-        float totalPrice = shoppingCartController.checkout();
-        System.out.println("Total price of games in cart: $" + totalPrice);
+        try {
+            float totalPrice = shoppingCartController.checkout();
+            if (totalPrice <= 0) {
+                throw new BusinessLogicException("Cart is empty. No total price available.");
+            }
+            System.out.println("Total price of games in cart: $" + totalPrice);
+        } catch (BusinessLogicException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
     }
 
     /**
@@ -704,25 +911,33 @@ public class ConsoleApp {
      */
 
     private void handleCheckout() {
-        float totalPrice = shoppingCartController.checkout();
-        float walletBalance = customerController.getWalletBalance();
+        try {
+            float totalPrice = shoppingCartController.checkout();
+            float walletBalance = customerController.getWalletBalance();
 
-        System.out.println("Wallet Balance: " + walletBalance);
-        System.out.println("Total Price of Cart: " + totalPrice);
+            System.out.println("Wallet Balance: " + walletBalance);
+            System.out.println("Total Price of Cart: " + totalPrice);
 
-        if (walletBalance >= totalPrice) {
-            customerController.addFundsToWallet(-totalPrice, new PaymentMethod(1, "Wallet"));
-            List<Game> purchasedGames = shoppingCartController.viewCartContents();
-
-            for (Game game : purchasedGames) {
-                customerController.addGameToLibrary(game);
+            if (totalPrice <= 0) {
+                throw new BusinessLogicException("Cart is empty. Cannot proceed with checkout.");
             }
 
-            shoppingCartController.clearCart();
-            System.out.println("Cart has been cleared.");
-            System.out.println("Checkout successful! Thank you for your purchase.");
-        } else {
-            System.out.println("Insufficient funds. Please add funds to your wallet.");
+            if (walletBalance >= totalPrice) {
+                customerController.addFundsToWallet(-totalPrice, new PaymentMethod(1, "Wallet"));
+                List<Game> purchasedGames = shoppingCartController.viewCartContents();
+
+                for (Game game : purchasedGames) {
+                    customerController.addGameToLibrary(game);
+                }
+
+                shoppingCartController.clearCart();
+                System.out.println("Cart has been cleared.");
+                System.out.println("Checkout successful! Thank you for your purchase.");
+            } else {
+                throw new BusinessLogicException("Insufficient funds. Please add funds to your wallet.");
+            }
+        } catch (BusinessLogicException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
 
     }
@@ -732,14 +947,18 @@ public class ConsoleApp {
      */
 
     private void handleViewLibrary() {
-        List<Game> libraryGames = customerController.getGamesLibrary();
-        if (libraryGames.isEmpty()) {
-            System.out.println("Your library is empty.");
-        } else {
-            System.out.println("Games in your library:");
-            for (Game game : libraryGames) {
-                System.out.println("- " + game.getGameName() + " ($" + game.getDiscountedPrice() + ")");
+        try {
+            List<Game> libraryGames = customerController.getGamesLibrary();
+            if (libraryGames.isEmpty()) {
+                throw new EntityNotFoundException("Your library is empty.");
+            } else {
+                System.out.println("Games in your library:");
+                for (Game game : libraryGames) {
+                    System.out.println("- " + game.getGameName() + " ($" + game.getDiscountedPrice() + ")");
+                }
             }
+        } catch (EntityNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
@@ -748,8 +967,12 @@ public class ConsoleApp {
      */
 
     private void handleViewWalletBalance() {
-        float balance = customerController.getWalletBalance();
-        System.out.println("Current funds: " + balance);
+        try {
+            float balance = customerController.getWalletBalance();
+            System.out.println("Current funds: " + balance);
+        } catch (Exception ex) {
+            System.out.println("Error: Unable to retrieve wallet balance.");
+        }
     }
 
     /**
@@ -757,19 +980,27 @@ public class ConsoleApp {
      */
 
     private void handleAddFundsToWallet() {
-        System.out.print("Write the amount you want to add to your wallet: ");
-        float amount = scanner.nextFloat();
-        scanner.nextLine();
+        try {
+            System.out.print("Write the amount you want to add to your wallet: ");
+            float amount = scanner.nextFloat();
+            scanner.nextLine();
+            if (amount <= 0) throw new ValidationException("Amount must be greater than zero!");
 
-        System.out.print("Choose the PaymentMethod (ex: Visa, PayPal, ApplePay): ");
-        String paymentType = scanner.nextLine();
+            System.out.print("Choose the PaymentMethod (ex: Visa, PayPal, ApplePay): ");
+            String paymentType = scanner.nextLine().trim();
+            if (paymentType.isEmpty()) throw new ValidationException("Payment method cannot be empty!");
 
-        PaymentMethod paymentMethod = new PaymentMethod(1, paymentType);
+            PaymentMethod paymentMethod = new PaymentMethod(1, paymentType);
 
-        if (customerController.addFundsToWallet(amount, paymentMethod)) {
-            System.out.println("Funds have been successfully added to your wallet.");
-        } else {
-            System.out.println("Funds could not be added.");
+            if (customerController.addFundsToWallet(amount, paymentMethod)) {
+                System.out.println("Funds have been successfully added to your wallet.");
+            } else {
+                throw new BusinessLogicException("Funds could not be added.");
+            }
+        } catch (ValidationException ex) {
+            System.out.println("Validation Error: " + ex.getMessage());
+        } catch (BusinessLogicException ex) {
+            System.out.println("Business Logic Error: " + ex.getMessage());
         }
     }
 
@@ -778,23 +1009,33 @@ public class ConsoleApp {
      */
 
     private void handleAddReviewToGame() {
-        System.out.print("Enter the name of the game to review: ");
-        String gameName = scanner.nextLine();
-        Game game = customerController.searchGameByName(gameName);
+        try {
+            System.out.print("Enter the name of the game to review: ");
+            String gameName = scanner.nextLine();
+            if (gameName.isBlank()) {
+                throw new ValidationException("Game name cannot be empty.");
+            }
+            Game game = customerController.searchGameByName(gameName);
 
-        if (game == null) {
-            System.out.println("Game not found.");
-            return;
-        }
+            if (game == null) {
+                throw new EntityNotFoundException("Game not found.");
+            }
 
-        System.out.print("Enter your review: ");
-        String reviewText = scanner.nextLine();
+            System.out.print("Enter your review: ");
+            String reviewText = scanner.nextLine();
 
-        boolean success = customerController.addReviewToGame(game, reviewText);
-        if (success) {
-            System.out.println("Review added successfully!");
-        } else {
-            System.out.println("Could not add review. Make sure you own the game.");
+            if (reviewText.isBlank()) {
+                throw new ValidationException("Review text cannot be empty.");
+            }
+
+            boolean success = customerController.addReviewToGame(game, reviewText);
+            if (success) {
+                System.out.println("Review added successfully!");
+            } else {
+                throw new BusinessLogicException("Could not add review. Make sure you own the game.");
+            }
+        } catch (ValidationException | EntityNotFoundException | BusinessLogicException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
