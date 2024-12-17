@@ -617,11 +617,11 @@ public class ConsoleApp {
             GameGenre gameGenre = GameGenre.valueOf(genreInput.toUpperCase());
 
             System.out.print("Price: ");
-            if (!scanner.hasNextInt()) {
+            if (!scanner.hasNextFloat()) {
                 scanner.nextLine();
                 throw new ValidationException("Price must be a valid integer.");
             }
-            int price = scanner.nextInt();
+            float price = scanner.nextFloat();
             scanner.nextLine();
 
             if (price <= 0) {
