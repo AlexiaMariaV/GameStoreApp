@@ -11,7 +11,7 @@ public class Tests {
 
     @Test
     public void TestCRUDCustomer() {
-        FileRepository<Customer> customerRepository = new FileRepository<>("customers.dat");
+        FileRepository<Customer> customerRepository = new FileRepository<>("customersTest.dat");
         Customer customer = new Customer(1, "TestUser", "test@test.com", "password123", "Customer", 100.0f, new ArrayList<>(), new ArrayList<>(), null);
 
         customerRepository.create(customer);
@@ -31,7 +31,7 @@ public class Tests {
 
     @Test
     public void TestCRUDAdmin() {
-        FileRepository<Admin> adminRepository = new FileRepository<>("admins.dat");
+        FileRepository<Admin> adminRepository = new FileRepository<>("adminsTest.dat");
         Admin admin = new Admin(1, "AdminUser", "admin@test.com", "adminpass", "Admin");
 
         adminRepository.create(admin);
@@ -51,7 +51,7 @@ public class Tests {
 
     @Test
     public void TestCRUDDeveloper() {
-        FileRepository<Developer> developerRepository = new FileRepository<>("developers.dat");
+        FileRepository<Developer> developerRepository = new FileRepository<>("developersTest.dat");
         Developer developer = new Developer(1, "DevUser", "dev@test.com", "devpass", "Developer", new ArrayList<>());
 
         developerRepository.create(developer);
@@ -71,7 +71,7 @@ public class Tests {
 
     @Test
     public void TestCRUDGame() {
-        FileRepository<Game> gameRepository = new FileRepository<>("games.dat");
+        FileRepository<Game> gameRepository = new FileRepository<>("gamesTest.dat");
         Game game = new Game(1, "TestGame", "A test game description", GameGenre.ADVENTURE, 29.99f, new ArrayList<>());
 
         gameRepository.create(game);
@@ -92,7 +92,7 @@ public class Tests {
 
     @Test
     public void TestCRUDDiscount() {
-        FileRepository<Discount> discountRepository = new FileRepository<>("discounts.dat");
+        FileRepository<Discount> discountRepository = new FileRepository<>("discountsTest.dat");
         Discount discount = new Discount(1, 20.0f);
 
         discountRepository.create(discount);
@@ -108,7 +108,7 @@ public class Tests {
 
     @Test
     public void TestCRUDReview() {
-        FileRepository<Review> reviewRepository = new FileRepository<>("reviews.dat");
+        FileRepository<Review> reviewRepository = new FileRepository<>("reviewsTest.dat");
         Customer customer = new Customer(1, "Reviewer", "reviewer@test.com", "pass", "Customer", 100.0f, new ArrayList<>(), new ArrayList<>(), null);
         Game game = new Game(1, "Reviewed Game", "Great game", GameGenre.RPG, 49.99f, new ArrayList<>());
         Review review = new Review(1, "Awesome Game!", customer, game);
@@ -126,7 +126,7 @@ public class Tests {
 
     @Test
     public void TestBuyingGame() {
-        FileRepository<Customer> customerRepository = new FileRepository<>("customers.dat");
+        FileRepository<Customer> customerRepository = new FileRepository<>("customersTest2.dat");
         FileRepository<Game> gameRepository = new FileRepository<>("games.dat");
         ShoppingCart shoppingCart = new ShoppingCart(null, new ArrayList<>());
 
@@ -158,9 +158,9 @@ public class Tests {
 
     @Test
     public void TestAddReview() {
-        FileRepository<Game> gameRepository = new FileRepository<>("games.dat");
-        FileRepository<Review> reviewRepository = new FileRepository<>("reviews.dat");
-        FileRepository<Customer> customerRepository = new FileRepository<>("customers.dat");
+        FileRepository<Game> gameRepository = new FileRepository<>("gamesTest2.dat");
+        FileRepository<Review> reviewRepository = new FileRepository<>("reviewsTest2.dat");
+        FileRepository<Customer> customerRepository = new FileRepository<>("customersTest3.dat");
 
         Customer customer = new Customer(1, "john_doe", "john@example.com", "password", "Customer", 100f, new ArrayList<>(), new ArrayList<>(), new ShoppingCart(null, new ArrayList<>()));
         Game game = new Game(1, "Test Game", "Description", GameGenre.ACTION, 19.99f, new ArrayList<>());
@@ -183,8 +183,8 @@ public class Tests {
 
     @Test
     public void TestAddGameAsDeveloper() {
-        FileRepository<Developer> developerRepository = new FileRepository<>("developers.dat");
-        FileRepository<Game> gameRepository = new FileRepository<>("games.dat");
+        FileRepository<Developer> developerRepository = new FileRepository<>("developersTest2.dat");
+        FileRepository<Game> gameRepository = new FileRepository<>("gamesTest3.dat");
 
         Developer developer = new Developer(1, "DevUser", "dev@test.com", "devpass123", "Developer", new ArrayList<>());
         developerRepository.create(developer);
@@ -204,7 +204,7 @@ public class Tests {
 
     @Test
     public void TestSortAndFilterGames() {
-        FileRepository<Game> gameRepository = new FileRepository<>("games.dat");
+        FileRepository<Game> gameRepository = new FileRepository<>("gamesTest4.dat");
         gameRepository.create(new Game(1, "Cyber Adventure", "Explore a cyber city", GameGenre.ADVENTURE, 59.99f, new ArrayList<>()));
         gameRepository.create(new Game(2, "Space Warfare", "Epic space battles", GameGenre.SHOOTER, 49.99f, new ArrayList<>()));
         gameRepository.create(new Game(3, "Mystic Quest", "Solve magical mysteries", GameGenre.RPG, 39.99f, new ArrayList<>()));
